@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>437103178955-s5pnrjpbdhs0qurdvqan1ggng98ph2nl.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.437103178955-s5pnrjpbdhs0qurdvqan1ggng98ph2nl</string>
+	<key>API_KEY</key>
+	<string>AIzaSyD6n4YMWRtHuxwzjuS74QD6PzvkPvZWi_A</string>
+	<key>GCM_SENDER_ID</key>
+	<string>437103178955</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.phenoxiod.noteHelper</string>
+	<key>PROJECT_ID</key>
+	<string>notehelper-98a0c</string>
+	<key>STORAGE_BUCKET</key>
+	<string>notehelper-98a0c.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:437103178955:ios:619be818edc84a3248574e</string>
+	<key>DATABASE_URL</key>
+	<string>https://notehelper-98a0c-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+</dict>
+</plist>
