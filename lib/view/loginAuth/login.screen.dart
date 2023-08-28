@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:note_helper/core/firebase/services/session.manager.dart';
 import 'package:note_helper/core/utils/constant/app.color.dart';
 import 'package:note_helper/view/loginAuth/login.with.phone.dart';
 import 'package:note_helper/view/widget/custom_button.dart';
@@ -40,6 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
             email: emailController.text.toString(),
             password: passwordController.text.toString())
         .then((value) {
+          // SessionController().userID =value.user!.uid.toString();
       FlutterToast().toastMessage(value.user!.email.toString());
 
       Navigator.push(

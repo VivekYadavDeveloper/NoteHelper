@@ -1,8 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:note_helper/view/loginAuth/login.screen.dart';
 import 'package:note_helper/view/widget/custom_button.dart';
 import 'package:note_helper/view/widget/flutter.toast.dart';
+
+import '../../core/firebase/services/session.manager.dart';
+import '../homeScreen/home.screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -26,6 +30,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   final FirebaseAuth _firebaseAuthentication = FirebaseAuth.instance;
 
+  //**** To Store The User Data In Realtime Database
+  //**** To Get The User ID
+  final DatabaseReference reference =
+      FirebaseDatabase.instance.ref().child('User');
+  //*** Create Account Function
   void createAccount() {
     setState(() {
       isLoading = true;
@@ -35,6 +44,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
             email: emailController.text.toString(),
             password: passwordController.text.toString())
         .then((value) {
+      isLoading = false;
+      // SessionController().userID =value.user!.uid.toString();
+      reference
+          .child(value.user!.uid
+              .toString()) // Create Diff UID For Different User So That Data Will Not Leak
+          .set({
+        // We Set/Store the Data In RealTime Database
+        'uid': value.user!.uid.toString(),
+        'email': value.user!.email.toString(),
+        'onlineStatus': 'noOne'
+      }).then((value) {
+        isLoading = false;
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      }).onError((error, stackTrace) {
+        isLoading = false;
+      });
+      FlutterToast().toastMessage('User Created Successfully');
       setState(() {
         isLoading = false;
       });

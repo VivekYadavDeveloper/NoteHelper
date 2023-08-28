@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:note_helper/core/firebase/services/session.manager.dart';
 import 'package:note_helper/view/addScreen/add.task.screen.dart';
 import 'package:note_helper/view/loginAuth/login.screen.dart';
 import 'package:note_helper/view/widget/flutter.toast.dart';
@@ -39,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 //**** Firebase Authentication Sign out
                 _firebaseAuthentication.signOut().then((value) {
+                  // SessionController().userID = '';
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -80,9 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-
               //*** Task Shown Here
-
               Text("DAILY TASK"),
               Expanded(
                 // flex: 1,
