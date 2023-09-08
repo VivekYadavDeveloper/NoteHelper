@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 import 'package:flutter/material.dart';
@@ -17,36 +18,31 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
   bool loading = false;
   final _formKey = GlobalKey<FormState>();
 
-  //*** Create Sub Child In Child And .child That's All
-  String id = DateTime.now().millisecondsSinceEpoch.toString();
+  /*Create Task Function "OLD"*/
 
-  //*** Create Database Instance Of Firebase Database
-  //**** With Reference(In Firebase RealTime Database We Create 'Post' Node/Table
-  final databaseRef = FirebaseDatabase.instance.ref('Post');
-
-  //**** Create Task Function
-  void createTask() {
-    setState(() {
-      loading = true;
-    });
-    //*** To Create a Different "ID" For Different Task
-    //*** We Use DateTime.now Function
-    databaseRef
-        .child(id)
-        .set({'id': id, 'title': taskController.text.toString()}).then((value) {
-      FlutterToast().toastMessage("Task Created");
-      debugPrint(taskController.text);
-      setState(() {
-        loading = false;
-      });
-      Navigator.pop(context);
-    }).onError((error, stackTrace) {
-      FlutterToast().toastMessage(error.toString());
-      setState(() {
-        loading = false;
-      });
-    });
-  }
+  // void createTask() {
+  //   setState(() {
+  //     loading = true;
+  //   });
+  //   //*** To Create a Different "ID" For Different Task
+  //   //*** We Use DateTime.now Function
+  //   databaseRef.child(userID).set({
+  //     'id': userID,
+  //     'title': taskController.text.trim().toString()
+  //   }).then((value) {
+  //     FlutterToast().toastMessage("Task Created");
+  //     debugPrint(taskController.text);
+  //     setState(() {
+  //       loading = false;
+  //     });
+  //     Navigator.pop(context);
+  //   }).onError((error, stackTrace) {
+  //     FlutterToast().toastMessage(error.toString());
+  //     setState(() {
+  //       loading = false;
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -83,9 +79,38 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
               CustomButton(
                   isLoading: loading,
                   title: "A D D  T A S K",
-                  onTap: () {
+                  onTap: () async {
                     if (_formKey.currentState!.validate()) {
-                      createTask();
+                      if (taskController.text.trim().isEmpty) {
+                        FlutterToast().toastMessage("Please Provide The Task");
+                        return;
+                      }
+                      User? user = FirebaseAuth.instance.currentUser;
+                      if (user != null) {
+                        String uID = user.uid;
+                        int dt = DateTime.now().millisecondsSinceEpoch;
+                        //*** Create Database Instance Of Firebase Database
+                        //**** With Reference(In Firebase RealTime Database We Create 'Post' Node/Table
+                        final DatabaseReference databaseRef = FirebaseDatabase
+                            .instance
+                            .ref()
+                            .child('Post')
+                            .child(uID);
+                        String taskID = databaseRef.push().key.toString();
+                        await databaseRef.child(taskID).set({
+                          'dt': dt,
+                          'taskName': taskController.text.trim(),
+                          'taskID': taskID
+                        }).then((value) {
+                          FlutterToast().toastMessage("Task Created");
+                          debugPrint(taskController.text);
+                          setState(() {
+                            loading = false;
+                            Navigator.pop(context);
+                          });
+                        });
+                      }
+                      // createTask();
                     }
                     // setState(() {
                     //   loading = true;

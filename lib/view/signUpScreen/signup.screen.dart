@@ -18,8 +18,10 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
+  final SharedPreferencesHelper helper = SharedPreferencesHelper();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  String? userID = "";
 
   @override
   void dispose() {
@@ -34,6 +36,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   //**** To Get The User ID
   final DatabaseReference reference =
       FirebaseDatabase.instance.ref().child('User');
+
   //*** Create Account Function
   void createAccount() {
     setState(() {
@@ -43,9 +46,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
         .createUserWithEmailAndPassword(
             email: emailController.text.toString(),
             password: passwordController.text.toString())
-        .then((value) {
+        .then((value) async {
       isLoading = false;
-      // SessionController().userID =value.user!.uid.toString();
+
+      // debugPrint("Account New Created😁 ---->${token.toString()}");
       reference
           .child(value.user!.uid
               .toString()) // Create Diff UID For Different User So That Data Will Not Leak
@@ -53,11 +57,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // We Set/Store the Data In RealTime Database
         'uid': value.user!.uid.toString(),
         'email': value.user!.email.toString(),
-        'onlineStatus': 'noOne'
+        'onlineStatus': 'noOne',
+        'profileImage':''
       }).then((value) {
         isLoading = false;
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()));
       }).onError((error, stackTrace) {
         isLoading = false;
       });

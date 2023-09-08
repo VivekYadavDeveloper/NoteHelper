@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:note_helper/core/firebase/services/session.manager.dart';
+import 'package:intl/intl.dart';
+import 'package:note_helper/core/model/post.model.dart';
 import 'package:note_helper/view/addScreen/add.task.screen.dart';
 import 'package:note_helper/view/loginAuth/login.screen.dart';
 import 'package:note_helper/view/widget/flutter.toast.dart';
@@ -16,11 +17,26 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final _firebaseAuthentication = FirebaseAuth.instance;
 
-  //** To Create Fetch The Data Form RealTime Data Base We Gonna Create A Reference
-  final refRTDBase = FirebaseDatabase.instance.ref('Post');
+  // To Get The User ID (We Created Reference)
+  User? user;
+
+  //** To Create Fetch The Data Form Realtime Data Base We Gonna Create A Reference
+  DatabaseReference? refRTDBase;
+
+  // final DatabaseReference refRTDBase = FirebaseDatabase.instance.ref('Post');
   final TextEditingController searchController = TextEditingController();
   final TextEditingController editController = TextEditingController();
   FocusNode? myFocusNode;
+
+  @override
+  void initState() {
+    user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      refRTDBase =
+          FirebaseDatabase.instance.ref().child('Post').child(user!.uid);
+    }
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -34,13 +50,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
               onPressed: () {
-                //**** Firebase Authentication Sign out
+               /********************** Firebase Authentication Sign out ***********************/
                 _firebaseAuthentication.signOut().then((value) {
-                  // SessionController().userID = '';
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -83,89 +99,104 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 10),
               //*** Task Shown Here
-              Text("DAILY TASK"),
+              const Text("DAILY TASK"),
               Expanded(
-                // flex: 1,
                 child: StreamBuilder(
-                  stream: refRTDBase.onValue,
-                  builder: (BuildContext context,
-                      AsyncSnapshot<DatabaseEvent> snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Center(child: CircularProgressIndicator()),
-                        ],
-                      );
-                    } else {
-                      Map<Object?, dynamic> map =
-                          snapshot.data!.snapshot.value as dynamic;
-                      List<dynamic> list = [];
-                      list.clear();
-                      list = map.values.toList();
+                  stream: refRTDBase != null ? refRTDBase!.onValue : null,
+                  builder: (BuildContext context, snapshot) {
+                    if (snapshot.hasData && !snapshot.hasError) {
+                      //** Create The Event To Get The "Data" of EventDatabase
+                      var event = snapshot.data as DatabaseEvent;
+                      //** Create Variable snapShot2 To Get The Event Data Is Object
+                      var snapShot2 = event.snapshot.value;
+                      if (snapShot2 == null) {
+                        return const Center(
+                          child: Text("No Task Available"),
+                        );
+                      }
+
+                      Map<String, dynamic> arguments =
+                          Map<String, dynamic>.from(
+                              snapShot2 as Map<Object?, dynamic>);
+
+                      var tasks = <PostModel>[];
+                      /*Create a Loop To Get The Data Dynamically*/
+                      for (var taskMap in arguments.values) {
+                        PostModel postModel = PostModel.fromMap(
+                            Map<String, dynamic>.from(taskMap));
+
+                        tasks.add(postModel);
+                      }
+
                       return ListView.builder(
-                          itemCount: map.length,
+                          itemCount: tasks.length,
                           itemBuilder: (context, index) {
                             //** To Filter/Search We Gonna Create The This Function
-                            final title = list[index]['title'];
+                            final postTitle = tasks.length
+                                .toString(); /*This Is For To Find The Task Related Data*/
+
+                            PostModel post = tasks[index];
                             //** If Search Field Is Empty
+                            //*** This Condition For Search Field Area
                             if (searchController.text.isEmpty) {
                               return ListTile(
-                                title: Text(
-                                  list[index]['title'],
-                                ),
-                                subtitle: Text(
-                                  list[index]['id'],
-                                ),
-                                trailing: PopupMenuButton(
-                                  icon: const Icon(Icons.more_horiz_rounded),
-                                  itemBuilder: (BuildContext context) => [
-                                    //*** Edit Section
-                                    PopupMenuItem(
-                                        value: 1,
-                                        child: ListTile(
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                            showMyDialog(
-                                              title,
-                                              list[index]['id'],
-                                            );
-                                          },
-                                          leading: const Icon(Icons.edit),
-                                          title: const Text("Edit"),
-                                        )),
-                                    //*** Delete Section
-                                    PopupMenuItem(
-                                        value: 1,
-                                        child: ListTile(
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                            refRTDBase
-                                                .child(list[index]['id'])
-                                                .remove();
-                                          },
-                                          leading: const Icon(
-                                              Icons.delete_forever_outlined),
-                                          title: const Text("DELETE"),
-                                        )),
-                                  ],
-                                ),
-                              );
-                            } else if (title.toLowerCase().contains(
+                                  title: Text(post.taskName),
+                                  subtitle: Text(getHumanReadableDate(post.dt)),
+                                  trailing: PopupMenuButton(
+                                    icon: const Icon(Icons.more_horiz_rounded),
+                                    itemBuilder: (BuildContext context) => [
+                                      /************************* Edit/Update Section ****************/
+                                      PopupMenuItem(
+                                          value: 1,
+                                          child: ListTile(
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              showMyDialog(
+                                                postTitle,
+                                                post.taskID,
+                                              );
+                                            },
+                                            leading: const Icon(Icons.edit),
+                                            title: const Text("Edit"),
+                                          )),
+                                       /**********************************Delete Section*************************/
+                                      PopupMenuItem(
+                                          value: 1,
+                                          child: ListTile(
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              if (refRTDBase != null) {
+                                                refRTDBase!
+                                                    .child(post.taskID)
+                                                    .remove();
+                                              }
+                                            },
+                                            leading: const Icon(
+                                                Icons.delete_forever_outlined),
+                                            title: const Text("DELETE"),
+                                          ))
+                                    ],
+                                  ));
+                            } else if (post.taskName.toLowerCase().contains(
                                 searchController.text
-                                    .toLowerCase()
+                                    .trim()
                                     .toLowerCase()
                                     .toString())) {
                               return ListTile(
-                                title: Text(
-                                  list[index]['title'],
-                                ),
+                                title: Text(post.taskName),
+                                subtitle: Text(getHumanReadableDate(post.dt)),
                               );
                             } else {
                               return const SizedBox();
                             }
                           });
+                    } else {
+                      return const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Center(child: CircularProgressIndicator()),
+                          ]);
                     }
                   },
                 ),
@@ -189,47 +220,55 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+/* Function For Show Dialog Box To Update And Delete Note*/
   Future<void> showMyDialog(String title, String id) async {
     editController.text = title;
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text("UPDATE"),
-            content: TextField(
-              autofocus: true,
-              focusNode: myFocusNode,
-              controller: editController,
-              decoration: const InputDecoration(
-                label: Text("Edit"),
-                hintText: "Edit",
-                border: OutlineInputBorder(),
+              title: const Text("UPDATE"),
+              content: TextField(
+                autofocus: true,
+                focusNode: myFocusNode,
+                controller: editController,
+                decoration: const InputDecoration(
+                  label: Text("Edit"),
+                  hintText: "Edit",
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text("CANCEL"),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  refRTDBase.child(id).update(
-                    {
-                      'title': editController.text.toString(),
-                    },
-                  ).then((value) {
-                    FlutterToast().toastMessage("UPDATE CHANGE");
-                  }).onError((error, stackTrace) {
-                    FlutterToast().toastMessage(error.toString());
-                  });
-                },
-                child: const Text("UPDATE"),
-              ),
-            ],
-          );
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("CANCEL"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+
+                    refRTDBase!.child(id).update(
+                      {
+                        'taskName': editController.text.trim().toString(),
+                      },
+                    ).then((value) {
+                      FlutterToast().toastMessage("UPDATE CHANGE");
+                    }).onError((error, stackTrace) {
+                      FlutterToast().toastMessage(error.toString());
+                    });
+                  },
+                  child: const Text("UPDATE"),
+                )
+              ]);
         });
+  }
+
+/*Create a Function To Convert Mill Sec Date Time To Human Readable Time/Date*/
+
+  String getHumanReadableDate(int dt) {
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(dt);
+    return DateFormat('dd MM yyyy').format(dateTime);
   }
 }
