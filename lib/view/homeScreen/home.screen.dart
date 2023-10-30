@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:note_helper/core/model/post.model.dart';
 import 'package:note_helper/view/addScreen/add.task.screen.dart';
 import 'package:note_helper/view/loginAuth/login.screen.dart';
+import 'package:note_helper/view/profileScreen/profile.screen.dart';
 import 'package:note_helper/view/widget/flutter.toast.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -42,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     searchController.dispose();
     editController.dispose();
-    myFocusNode!.dispose();
+    myFocusNode?.dispose();
     super.dispose();
   }
 
@@ -55,7 +56,15 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
               onPressed: () {
-               /********************** Firebase Authentication Sign out ***********************/
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ProfileScreen()));
+              },
+              icon: Icon(Icons.person)),
+          IconButton(
+              onPressed: () {
+                /********************** Firebase Authentication Sign out ***********************/
                 _firebaseAuthentication.signOut().then((value) {
                   Navigator.push(
                       context,
@@ -65,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   FlutterToast().toastMessage(error.toString());
                 });
               },
-              icon: const Icon(Icons.logout))
+              icon: const Icon(Icons.logout)),
         ],
         title: const Center(
           child: Text("T A S K  S C R E E N"),
@@ -159,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             leading: const Icon(Icons.edit),
                                             title: const Text("Edit"),
                                           )),
-                                       /**********************************Delete Section*************************/
+                                      /**********************************Delete Section*************************/
                                       PopupMenuItem(
                                           value: 1,
                                           child: ListTile(
