@@ -1,4 +1,4 @@
-# note_helper
+# NoteHelper
 
 A new Flutter project.
 
