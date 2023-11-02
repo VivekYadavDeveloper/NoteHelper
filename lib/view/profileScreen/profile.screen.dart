@@ -8,7 +8,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:note_helper/view/widget/custom_button.dart';
 import 'package:note_helper/view/widget/resuable.widget.dart';
-
 import '../../core/model/post.model.dart';
 import '../widget/flutter.toast.dart';
 

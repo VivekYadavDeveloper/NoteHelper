@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:note_helper/core/model/post.model.dart';
+import 'package:note_helper/main.dart';
 import 'package:note_helper/view/addScreen/add.task.screen.dart';
 import 'package:note_helper/view/loginAuth/login.screen.dart';
 import 'package:note_helper/view/profileScreen/profile.screen.dart';
@@ -148,44 +149,49 @@ class _HomeScreenState extends State<HomeScreen> {
                             //** If Search Field Is Empty
                             //*** This Condition For Search Field Area
                             if (searchController.text.isEmpty) {
-                              return ListTile(
-                                  title: Text(post.taskName),
-                                  subtitle: Text(getHumanReadableDate(post.dt)),
-                                  trailing: PopupMenuButton(
-                                    icon: const Icon(Icons.more_horiz_rounded),
-                                    itemBuilder: (BuildContext context) => [
-                                      /************************* Edit/Update Section ****************/
-                                      PopupMenuItem(
-                                          value: 1,
-                                          child: ListTile(
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              showMyDialog(
-                                                postTitle,
-                                                post.taskID,
-                                              );
-                                            },
-                                            leading: const Icon(Icons.edit),
-                                            title: const Text("Edit"),
-                                          )),
-                                      /**********************************Delete Section*************************/
-                                      PopupMenuItem(
-                                          value: 1,
-                                          child: ListTile(
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              if (refRTDBase != null) {
-                                                refRTDBase!
-                                                    .child(post.taskID)
-                                                    .remove();
-                                              }
-                                            },
-                                            leading: const Icon(
-                                                Icons.delete_forever_outlined),
-                                            title: const Text("DELETE"),
-                                          ))
-                                    ],
-                                  ));
+                              return Card(
+                                color: getRandomColor(),
+                                child: ListTile(
+                                    title: Text(post.taskName),
+                                    subtitle:
+                                        Text(getHumanReadableDate(post.dt)),
+                                    trailing: PopupMenuButton(
+                                      icon:
+                                          const Icon(Icons.more_horiz_rounded),
+                                      itemBuilder: (BuildContext context) => [
+                                        /************************* Edit/Update Section ****************/
+                                        PopupMenuItem(
+                                            value: 1,
+                                            child: ListTile(
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                showMyDialog(
+                                                  postTitle,
+                                                  post.taskID,
+                                                );
+                                              },
+                                              leading: const Icon(Icons.edit),
+                                              title: const Text("Edit"),
+                                            )),
+                                        /**********************************Delete Section*************************/
+                                        PopupMenuItem(
+                                            value: 1,
+                                            child: ListTile(
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                if (refRTDBase != null) {
+                                                  refRTDBase!
+                                                      .child(post.taskID)
+                                                      .remove();
+                                                }
+                                              },
+                                              leading: const Icon(Icons
+                                                  .delete_forever_outlined),
+                                              title: const Text("DELETE"),
+                                            ))
+                                      ],
+                                    )),
+                              );
                             } else if (post.taskName.toLowerCase().contains(
                                 searchController.text
                                     .trim()
