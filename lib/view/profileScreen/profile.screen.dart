@@ -86,7 +86,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   child: Container(
                                     height: 130,
                                     width: 130,
-                                    color: Colors.blueAccent,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white70,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(100),
+                                      ),
+                                    ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(100),
                                       child: map['profileImage'].toString() ==
