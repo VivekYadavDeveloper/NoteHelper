@@ -18,7 +18,6 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
-  final SharedPreferencesHelper helper = SharedPreferencesHelper();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   String? userID = "";
