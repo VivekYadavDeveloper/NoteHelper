@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
       title: 'N O T E  H E L P E R',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+
         appBarTheme: AppBarTheme(backgroundColor: AppColors.appBarColor),
         fontFamily: GoogleFonts.poppins().fontFamily,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:note_helper/core/model/post.model.dart';
 import 'package:note_helper/main.dart';
 import 'package:note_helper/view/addScreen/add.task.screen.dart';
+import 'package:note_helper/view/homeScreen/details.screen.dart';
 import 'package:note_helper/view/loginAuth/login.screen.dart';
 import 'package:note_helper/view/profileScreen/profile.screen.dart';
 import 'package:note_helper/view/widget/flutter.toast.dart';
@@ -62,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     MaterialPageRoute(
                         builder: (context) => const ProfileScreen()));
               },
-              icon: Icon(Icons.person)),
+              icon: const Icon(Icons.person)),
           IconButton(
               onPressed: () {
                 /********************** Firebase Authentication Sign out ***********************/
@@ -103,13 +105,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   setState(() {});
                 },
                 decoration: const InputDecoration(
-                  label: Text("Search...."),
+                  label: Text("Search"),
                   border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 10),
               //*** Task Shown Here
-              const Text("DAILY TASK"),
+              const Align(
+                  alignment: Alignment.topLeft,
+                  child: Text("DAILY TASK")),
               Expanded(
                 child: StreamBuilder(
                   stream: refRTDBase != null ? refRTDBase!.onValue : null,
@@ -149,48 +153,78 @@ class _HomeScreenState extends State<HomeScreen> {
                             //** If Search Field Is Empty
                             //*** This Condition For Search Field Area
                             if (searchController.text.isEmpty) {
-                              return Card(
-                                color: getRandomColor(),
-                                child: ListTile(
-                                    title: Text(post.taskName),
-                                    subtitle:
-                                        Text(getHumanReadableDate(post.dt)),
-                                    trailing: PopupMenuButton(
-                                      icon:
-                                          const Icon(Icons.more_horiz_rounded),
-                                      itemBuilder: (BuildContext context) => [
-                                        /************************* Edit/Update Section ****************/
-                                        PopupMenuItem(
-                                            value: 1,
-                                            child: ListTile(
-                                              onTap: () {
-                                                Navigator.pop(context);
-                                                showMyDialog(
-                                                  postTitle,
-                                                  post.taskID,
-                                                );
-                                              },
-                                              leading: const Icon(Icons.edit),
-                                              title: const Text("Edit"),
-                                            )),
-                                        /**********************************Delete Section*************************/
-                                        PopupMenuItem(
-                                            value: 1,
-                                            child: ListTile(
-                                              onTap: () {
-                                                Navigator.pop(context);
-                                                if (refRTDBase != null) {
-                                                  refRTDBase!
-                                                      .child(post.taskID)
-                                                      .remove();
-                                                }
-                                              },
-                                              leading: const Icon(Icons
-                                                  .delete_forever_outlined),
-                                              title: const Text("DELETE"),
-                                            ))
-                                      ],
-                                    )),
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => DetailScreen(
+                                            title: post.title,
+                                            date: post.dt,
+                                            subData: post.taskName,
+                                          )));
+                                },
+                                child: Card(
+                                  color: getRandomColor(),
+                                  child: ListTile(
+                                      title: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            post.title,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            post.taskName,
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+                                      subtitle:
+                                          Text(getHumanReadableDate(post.dt)),
+                                      trailing: PopupMenuButton(
+                                        icon: const Icon(
+                                            Icons.more_horiz_rounded),
+                                        itemBuilder: (BuildContext context) => [
+                                          /************************* Edit/Update Section ****************/
+                                          PopupMenuItem(
+                                              value: 1,
+                                              child: ListTile(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                  showMyDialog(
+                                                    postTitle,
+                                                    post.taskID,
+                                                  );
+                                                },
+                                                leading: const Icon(Icons.edit),
+                                                title: const Text("Edit"),
+                                              )),
+                                          /**********************************Delete Section*************************/
+                                          PopupMenuItem(
+                                              value: 1,
+                                              child: ListTile(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                  if (refRTDBase != null) {
+                                                    refRTDBase!
+                                                        .child(post.taskID)
+                                                        .remove();
+                                                  }
+                                                },
+                                                leading: const Icon(Icons
+                                                    .delete_forever_outlined),
+                                                title: const Text("DELETE"),
+                                              ))
+                                        ],
+                                      )),
+                                ),
                               );
                             } else if (post.taskName.toLowerCase().contains(
                                 searchController.text

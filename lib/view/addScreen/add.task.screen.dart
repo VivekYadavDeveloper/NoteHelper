@@ -14,6 +14,7 @@ class AddPTaskScreen extends StatefulWidget {
 
 class _AddPTaskScreenState extends State<AddPTaskScreen> {
   final TextEditingController taskController = TextEditingController();
+  final TextEditingController titleController = TextEditingController();
 
   bool loading = false;
   final _formKey = GlobalKey<FormState>();
@@ -58,21 +59,42 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
               const SizedBox(height: 50),
               Form(
                 key: _formKey,
-                child: TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Create An Task';
-                    }
-                    return null;
-                  },
-                  maxLines: 5,
-                  keyboardType: TextInputType.emailAddress,
-                  controller: taskController,
-                  decoration: const InputDecoration(
-                    label: Text("Your Task...."),
-                    hintText: "Your Task",
-                    border: OutlineInputBorder(),
-                  ),
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Create An Title';
+                        }
+                        return null;
+                      },
+                      maxLines: 1,
+                      keyboardType: TextInputType.emailAddress,
+                      controller: titleController,
+                      decoration: const InputDecoration(
+                        label: Text("Title.."),
+                        hintText: "Title",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Create An Task';
+                        }
+                        return null;
+                      },
+                      maxLines: 5,
+                      keyboardType: TextInputType.emailAddress,
+                      controller: taskController,
+                      decoration: const InputDecoration(
+                        label: Text("Your Task...."),
+                        hintText: "Your Task",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 50),
@@ -81,8 +103,10 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
                   title: "A D D  T A S K",
                   onTap: () async {
                     if (_formKey.currentState!.validate()) {
-                      if (taskController.text.trim().isEmpty) {
-                        FlutterToast().toastMessage("Please Provide The Task");
+                      if (taskController.text.trim().isEmpty ||
+                          titleController.text.trim().isEmpty) {
+                        FlutterToast()
+                            .toastMessage("Please Provide The Task Or Title");
                         return;
                       }
                       User? user = FirebaseAuth.instance.currentUser;
@@ -99,6 +123,7 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
                         String taskID = databaseRef.push().key.toString();
                         await databaseRef.child(taskID).set({
                           'dt': dt,
+                          'title': titleController.text.trim(),
                           'taskName': taskController.text.trim(),
                           'taskID': taskID
                         }).then((value) {
