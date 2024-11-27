@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:note_helper/view/widget/custom_button.dart';
 import 'package:note_helper/view/widget/resuable.widget.dart';
@@ -175,7 +174,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   );
                 } else {
-                  return Center(
+                  return const Center(
                     child: Text(
                       "Something Went Wrong",
                       style: TextStyle(fontSize: 25),
