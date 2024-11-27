@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:note_helper/Bloc/LoginBloc/login_bloc.dart';
 import 'package:note_helper/core/utils/constant/app.color.dart';
 import 'firebase_options.dart';
 import 'view/splashScreen/splash.screen.dart';
@@ -26,7 +28,9 @@ void main() async {
   DefaultFirebaseOptions.currentPlatform;
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(MultiBlocProvider(
+      providers: [BlocProvider(create: (context) => LoginBloc())],
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -38,7 +42,6 @@ class MyApp extends StatelessWidget {
       title: 'N O T E  H E L P E R',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-
         appBarTheme: AppBarTheme(backgroundColor: AppColors.appBarColor),
         fontFamily: GoogleFonts.poppins().fontFamily,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

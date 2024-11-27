@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:note_helper/view/loginAuth/login.screen.dart';
+import 'package:note_helper/view/Auth/login.screen.dart';
 import 'package:note_helper/view/widget/custom_button.dart';
 import 'package:note_helper/view/widget/flutter.toast.dart';
 
@@ -57,7 +57,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         'uid': value.user!.uid.toString(),
         'email': value.user!.email.toString(),
         'onlineStatus': 'noOne',
-        'profileImage':''
+        'profileImage': ''
       }).then((value) {
         isLoading = false;
         Navigator.push(context,

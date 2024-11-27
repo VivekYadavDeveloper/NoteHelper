@@ -13,20 +13,7 @@
           "package_name": "com.phenoxiod.note_helper"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "437103178955-qetbel5olrvjg8qubb4hqcjmhvt14fr6.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.phenoxiod.note_helper",
-            "certificate_hash": "72e9280e2b3f82f6ae42d2d7e0fb7b4eb2711f78"
-          }
-        },
-        {
-          "client_id": "437103178955-rbhgkgpl1cmbj4ep8usdltio33i1kcoq.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
           "current_key": "AIzaSyDpwOcCiW4vsw7ZdEN9eBAp31jAdwJ114A"
@@ -34,19 +21,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "437103178955-rbhgkgpl1cmbj4ep8usdltio33i1kcoq.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "437103178955-s5pnrjpbdhs0qurdvqan1ggng98ph2nl.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.phenoxiod.noteHelper"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

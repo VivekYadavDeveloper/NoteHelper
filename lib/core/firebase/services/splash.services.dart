@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:note_helper/view/homeScreen/home.screen.dart';
-import 'package:note_helper/view/loginAuth/login.screen.dart';
+import 'package:note_helper/view/Auth/login.screen.dart';
 
 class SplashServices {
   final firebaseAuthentication = FirebaseAuth.instance;
@@ -28,5 +28,4 @@ class SplashServices {
       });
     }
   }
-}
-/*https://github.com/PearlOrganisationApplications/Peeptoon/blob/main/lib/presentation/screens/optScreen/otp.screen.dart*/
+} /*https://github.com/PearlOrganisationApplications/Peeptoon/blob/main/lib/presentation/screens/optScreen/otp.screen.dart*/

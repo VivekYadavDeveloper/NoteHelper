@@ -1,12 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:note_helper/core/utils/constant/app.color.dart';
 import 'package:note_helper/view/forgotPasswordScreen/forgotpass.screen.dart';
 import 'package:note_helper/view/loginAuth/login.with.phone.dart';
 import 'package:note_helper/view/widget/custom_button.dart';
 import 'package:note_helper/view/widget/flutter.toast.dart';
 
+import '../../Bloc/LoginBloc/login_bloc.dart';
 import '../homeScreen/home.screen.dart';
 import '../signUpScreen/signup.screen.dart';
 
@@ -21,47 +22,45 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final FirebaseAuth _firebaseAuthentication = FirebaseAuth.instance;
   bool loading = false;
+  bool isPasswordVisible = true;
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
-    passwordController.clear();
-    emailController.clear();
     super.dispose();
   }
 
   //**** Firebase Authentication LogIn
-  void login() {
-    setState(() {
-      loading = true;
-    });
-    _firebaseAuthentication
-        .signInWithEmailAndPassword(
-            email: emailController.text.toString(),
-            password: passwordController.text.toString())
-        .then((value) async {
-      // print("Login Key----->  ${userID.toString()}");
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-          (route) => false);
-      // SessionController().userID =value.user!.uid.toString();
-      FlutterToast().toastMessage(value.user!.email.toString());
-
-      setState(() {
-        loading = false;
-      });
-    }).onError((error, stackTrace) {
-      debugPrint(error.toString());
-      FlutterToast().toastMessage(error.toString());
-      setState(() {
-        loading = false;
-      });
-    });
-  }
+  // void login() {
+  //   setState(() {
+  //     loading = true;
+  //   });
+  //   _firebaseAuthentication
+  //       .signInWithEmailAndPassword(
+  //           email: emailController.text.toString(),
+  //           password: passwordController.text.toString())
+  //       .then((value) async {
+  //     // print("Login Key----->  ${userID.toString()}");
+  //     Navigator.pushAndRemoveUntil(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => const HomeScreen()),
+  //         (route) => false);
+  //     // SessionController().userID =value.user!.uid.toString();
+  //     FlutterToast().toastMessage(value.user!.email.toString());
+  //
+  //     setState(() {
+  //       loading = false;
+  //     });
+  //   }).onError((error, stackTrace) {
+  //     debugPrint(error.toString());
+  //     FlutterToast().toastMessage(error.toString());
+  //     setState(() {
+  //       loading = false;
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -108,20 +107,43 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 20),
                             TextFormField(
-                              obscureText: true,
+                              obscureText: !isPasswordVisible,
                               keyboardType: TextInputType.visiblePassword,
                               controller: passwordController,
                               validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Password';
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a password';
+                                }
+                                if (value.length < 8) {
+                                  return 'Password must be at least 8 characters long';
+                                }
+                                if (!RegExp(
+                                  r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$',
+                                ).hasMatch(value)) {
+                                  return """Password must include:
+                      - 1 Upper case
+                      - 1 lowercase
+                      - 1 Numeric Number
+                      - 1 Special Character""";
                                 }
                                 return null;
                               },
-                              decoration: const InputDecoration(
-                                label: Text("Password"),
+                              decoration: InputDecoration(
+                                suffixIcon: InkWell(
+                                  onTap: () {
+                                    isPasswordVisible = !isPasswordVisible;
+                                    setState(() {});
+                                  },
+                                  child: !isPasswordVisible
+                                      ? const Icon(Icons.visibility,
+                                          color: Colors.white70)
+                                      : const Icon(Icons.visibility_off,
+                                          color: Colors.white70),
+                                ),
+                                label: const Text("Password"),
                                 hintText: "Password",
                                 helperText: "Enter Your Password",
-                                border: OutlineInputBorder(),
+                                border: const OutlineInputBorder(),
                               ),
                             ),
                           ],
@@ -146,14 +168,37 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                     const SizedBox(height: 25),
-                    CustomButton(
-                      isLoading: loading,
-                      title: 'L O G I N',
-                      onTap: () {
-                        if (_formKey.currentState!.validate()) {
-                          login();
+                    BlocListener<LoginBloc, LoginState>(
+                      listener: (context, state) {
+                        if (state is LoginLoadingState) {
+                          loading = true;
+                        }
+                        if (state is LoginFailerState) {
+                          loading = false;
+                          FlutterToast().toastMessage(state.errorMessage);
+                        }
+                        if (state is LoginSuccessState) {
+                          loading = false;
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HomeScreen()),
+                              (route) => false);
+                          FlutterToast().toastMessage(state.snackMsg!);
                         }
                       },
+                      child: CustomButton(
+                        isLoading: loading,
+                        title: 'L O G I N',
+                        onTap: () {
+                          if (_formKey.currentState!.validate()) {
+                            context.read<LoginBloc>().add(
+                                LoginButtonPressedEvent(
+                                    email: emailController.text.trim(),
+                                    password: passwordController.text.trim()));
+                          }
+                        },
+                      ),
                     ),
                     const SizedBox(height: 20),
                     Row(

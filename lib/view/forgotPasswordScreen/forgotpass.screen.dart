@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:note_helper/view/loginAuth/login.screen.dart';
+import 'package:note_helper/view/Auth/login.screen.dart';
 import 'package:note_helper/view/widget/custom_button.dart';
 
 import '../widget/flutter.toast.dart';

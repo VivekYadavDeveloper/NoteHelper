@@ -7,7 +7,7 @@ import 'package:note_helper/core/model/post.model.dart';
 import 'package:note_helper/main.dart';
 import 'package:note_helper/view/addScreen/add.task.screen.dart';
 import 'package:note_helper/view/homeScreen/details.screen.dart';
-import 'package:note_helper/view/loginAuth/login.screen.dart';
+import 'package:note_helper/view/Auth/login.screen.dart';
 import 'package:note_helper/view/profileScreen/profile.screen.dart';
 import 'package:note_helper/view/widget/flutter.toast.dart';
 
@@ -112,8 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
               //*** Task Shown Here
               const Align(
-                  alignment: Alignment.topLeft,
-                  child: Text("DAILY TASK")),
+                  alignment: Alignment.topLeft, child: Text("DAILY TASK")),
               Expanded(
                 child: StreamBuilder(
                   stream: refRTDBase != null ? refRTDBase!.onValue : null,
