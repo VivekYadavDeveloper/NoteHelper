@@ -24,7 +24,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           var pref = await SharedPreferences.getInstance();
           pref.setString("UID", userCredential.user!.uid);
         }
-        developer.log("Login Key----->  ${userCredential.user!.uid.toString()}",
+        developer.log(
+            "Login Key----->   ${userCredential.user!.uid.toString()}",
             name: "LoginBloc");
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
