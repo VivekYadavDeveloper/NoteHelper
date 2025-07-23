@@ -22,7 +22,7 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen> {
         return Column(
           children: <Widget>[
             Center(
-              child: Text("Verifie Number"),
+              child: Text("Verifies Number"),
             )
           ],
         );

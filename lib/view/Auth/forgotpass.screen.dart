@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:note_helper/view/Auth/login.screen.dart';
 import 'package:note_helper/view/widget/custom_button.dart';
 
+import '../../Bloc/ForgotBloc/forgot_pass_bloc.dart';
 import '../widget/flutter.toast.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -14,42 +16,14 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final _formKey = GlobalKey<FormState>();
   final TextEditingController fEmailController = TextEditingController();
-
-  final FirebaseAuth _firebaseAuthentication = FirebaseAuth.instance;
+  final _formKey = GlobalKey<FormState>();
   bool loading = false;
 
   @override
   void dispose() {
     fEmailController.dispose();
     super.dispose();
-  }
-
-  //**** Firebase Authentication LogIn
-  void forgot() {
-    setState(() {
-      loading = true;
-    });
-    _firebaseAuthentication
-        .sendPasswordResetEmail(email: fEmailController.text.toString())
-        .then((value) {
-      // print("Login Key----->  ${userID.toString()}");
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()));
-
-      setState(() {
-        loading = false;
-      });
-      FlutterToast()
-          .toastMessage("Please Check Your Email To Recover Your Password");
-    }).onError((error, stackTrace) {
-      debugPrint(error.toString());
-      FlutterToast().toastMessage(error.toString());
-      setState(() {
-        loading = false;
-      });
-    });
   }
 
   @override
@@ -82,15 +56,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             keyboardType: TextInputType.emailAddress,
                             controller: fEmailController,
                             validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Enter Email';
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your email address';
+                              }
+                              // Regular expression for email validation
+                              if (!RegExp(
+                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
+                              ).hasMatch(value)) {
+                                return 'Please enter a valid email address';
                               }
                               return null;
                             },
                             decoration: const InputDecoration(
                               label: Text("Email"),
-                              hintText: "Email",
-                              helperText: "Enter Your Email",
+                              hintText: "John@gmail.com",
                               border: OutlineInputBorder(),
                             ),
                           ),
@@ -99,14 +78,33 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                   ),
                   const SizedBox(height: 25),
-                  CustomButton(
-                    isLoading: loading,
-                    title: 'R E C O V E R ',
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {
-                        forgot();
+                  BlocListener<ForgotPassBloc, ForgotPassState>(
+                    listener: (context, state) {
+                      if (state is ForgotPassLoading) {
+                        loading = true;
+                      }
+                      if (state is ForgotPassFailer) {
+                        loading = false;
+                        FlutterToast().toastMessage(state.errorMessage);
+                      }
+                      if (state is ForgotPassSuccess) {
+                        loading = false;
+                        FlutterToast()
+                            .toastMessage(state.snakeMessage.toString());
+                        Navigator.pop(context);
                       }
                     },
+                    child: CustomButton(
+                      isLoading: loading,
+                      title: 'R E C O V E R ',
+                      onTap: () {
+                        if (_formKey.currentState!.validate()) {
+                          context.read<ForgotPassBloc>().add(
+                              ForgotPassButtonPressedEvent(
+                                  email: fEmailController.text.trim()));
+                        }
+                      },
+                    ),
                   ),
                   const SizedBox(height: 20),
                 ],

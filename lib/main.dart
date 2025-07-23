@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:note_helper/Bloc/LoginBloc/login_bloc.dart';
 import 'package:note_helper/core/utils/constant/app.color.dart';
+import 'Bloc/ForgotBloc/forgot_pass_bloc.dart';
 import 'Bloc/SignupBloc/signup_bloc.dart';
 import 'firebase_options.dart';
 import 'view/splashScreen/splash.screen.dart';
@@ -32,6 +33,7 @@ void main() async {
   runApp(MultiBlocProvider(providers: [
     BlocProvider(create: (context) => LoginBloc()),
     BlocProvider(create: (context) => SignupBloc()),
+    BlocProvider(create: (context) => ForgotPassBloc()),
   ], child: const MyApp()));
 }
 

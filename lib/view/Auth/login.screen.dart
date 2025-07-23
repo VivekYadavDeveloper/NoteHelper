@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:note_helper/core/utils/constant/app.color.dart';
-import 'package:note_helper/view/forgotPasswordScreen/forgotpass.screen.dart';
-import 'package:note_helper/view/loginAuth/login.with.phone.dart';
+import 'package:note_helper/view/Auth/forgotpass.screen.dart';
+import 'package:note_helper/view/Auth/login.with.phone.dart';
 import 'package:note_helper/view/widget/custom_button.dart';
 import 'package:note_helper/view/widget/flutter.toast.dart';
 
 import '../../Bloc/LoginBloc/login_bloc.dart';
 import '../homeScreen/home.screen.dart';
-import '../signUpScreen/signup.screen.dart';
+import 'signup.screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,11 +19,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  bool loading = false;
+  final _formKey = GlobalKey<FormState>();
   bool isPasswordVisible = true;
+  bool loading = false;
 
   @override
   void dispose() {
@@ -31,36 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
     passwordController.dispose();
     super.dispose();
   }
-
-  //**** Firebase Authentication LogIn
-  // void login() {
-  //   setState(() {
-  //     loading = true;
-  //   });
-  //   _firebaseAuthentication
-  //       .signInWithEmailAndPassword(
-  //           email: emailController.text.toString(),
-  //           password: passwordController.text.toString())
-  //       .then((value) async {
-  //     // print("Login Key----->  ${userID.toString()}");
-  //     Navigator.pushAndRemoveUntil(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => const HomeScreen()),
-  //         (route) => false);
-  //     // SessionController().userID =value.user!.uid.toString();
-  //     FlutterToast().toastMessage(value.user!.email.toString());
-  //
-  //     setState(() {
-  //       loading = false;
-  //     });
-  //   }).onError((error, stackTrace) {
-  //     debugPrint(error.toString());
-  //     FlutterToast().toastMessage(error.toString());
-  //     setState(() {
-  //       loading = false;
-  //     });
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -93,8 +63,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               keyboardType: TextInputType.emailAddress,
                               controller: emailController,
                               validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Enter Email';
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your email address';
+                                }
+                                // Regular expression for email validation
+                                if (!RegExp(
+                                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
+                                ).hasMatch(value)) {
+                                  return 'Please enter a valid email address';
                                 }
                                 return null;
                               },

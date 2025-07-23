@@ -25,9 +25,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
-  bool isLoading = false;
-  bool isPasswordVisible = true;
   bool isConfirmPasswordVisible = true;
+  bool isPasswordVisible = true;
+
+  bool isLoading = false;
 
   @override
   void dispose() {

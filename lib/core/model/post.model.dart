@@ -7,8 +7,7 @@ class PostModel {
 
   PostModel(
       {required this.title,
-        required this.taskID,
-
+      required this.taskID,
       required this.taskName,
       required this.dt,
       required this.profileImage});

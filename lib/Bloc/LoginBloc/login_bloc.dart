@@ -12,9 +12,8 @@ part 'login_state.dart';
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc() : super(LoginInitialState()) {
     on<LoginButtonPressedEvent>((event, emit) async {
+      emit(LoginLoadingState());
       try {
-        emit(LoginLoadingState());
-
         UserCredential userCredential = await FirebaseAuth.instance
             .signInWithEmailAndPassword(
                 email: event.email, password: event.password);

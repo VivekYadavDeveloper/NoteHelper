@@ -29,7 +29,8 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
           'onlineStatus': 'noOne',
           'profileImage': ''
         });
-        if (userCredential.user!.uid != null) {
+        if (userCredential.user!.uid != null ||
+            userCredential.user!.uid != "") {
           emit(SignupSuccess(snakeMessage: "Account Created Successfully!"));
           FlutterToast().toastMessage('Account Created Successfully!');
         }
