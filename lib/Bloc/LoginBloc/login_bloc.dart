@@ -2,7 +2,8 @@ import 'dart:developer' as developer show log;
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/material.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'login_event.dart';

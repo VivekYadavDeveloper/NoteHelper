@@ -115,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   alignment: Alignment.topLeft, child: Text("DAILY TASK")),
               Expanded(
                 child: StreamBuilder(
-                  stream: refRTDBase != null ? refRTDBase!.onValue : null,
+                  stream: refRTDBase?.onValue,
                   builder: (BuildContext context, snapshot) {
                     if (snapshot.hasData && !snapshot.hasError) {
                       //** Create The Event To Get The "Data" of EventDatabase

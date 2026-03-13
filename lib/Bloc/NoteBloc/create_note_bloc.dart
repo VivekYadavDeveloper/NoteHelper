@@ -1,0 +1,43 @@
+import 'package:bloc/bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
+
+import '../../../view/widget/flutter.toast.dart';
+
+part 'create_note_event.dart';
+part 'create_note_state.dart';
+
+class CreateNoteBloc extends Bloc<CreateNoteEvent, CreateNoteState> {
+  
+  CreateNoteBloc() : super(CreateNoteInitial()) {
+    on<CreateNoteButtonEvent>((event, emit) async {
+      emit(CreateNoteLoading());
+      if (event.title.isNotEmpty && event.description.isNotEmpty) {
+        try {
+          User? user = FirebaseAuth.instance.currentUser;
+          if (user != null) {
+            String uID = user.uid;
+            int dt = DateTime.now().millisecondsSinceEpoch;
+            //**** With Reference(In Firebase RealTime Database We Create 'Post' Node/Table
+            final DatabaseReference databaseRef =
+                FirebaseDatabase.instance.ref().child('Post').child(uID);
+            String taskID = databaseRef.push().key.toString();
+            await databaseRef.child(taskID).set({
+              'dt': dt,
+              'title': event.title.trim(),
+              'taskName': event.description..trim(),
+              'taskID': taskID
+            }).then((value) {
+              FlutterToast().toastMessage("Reminder Created");
+              emit(CreateNoteSuccess());
+              debugPrint(event.title);
+            });
+          }
+        } on FirebaseException catch (e) {
+          emit(CreateNoteFailure(e.toString()));
+        }
+      }
+    });
+  }
+}
