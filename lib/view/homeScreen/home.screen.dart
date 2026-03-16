@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:note_helper/core/model/post.model.dart';
-import 'package:note_helper/main.dart';
+import 'package:note_helper/core/utils/constant/app.color.dart';
 import 'package:note_helper/view/addScreen/add.task.screen.dart';
 import 'package:note_helper/view/homeScreen/details.screen.dart';
 import 'package:note_helper/view/Auth/login.screen.dart';
@@ -53,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.primaryColor,
       appBar: AppBar(
         centerTitle: true,
         automaticallyImplyLeading: false,
@@ -84,11 +84,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.primaryGreenMintColor,
         onPressed: () {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const AddPTaskScreen()));
         },
-        child: const Icon(Icons.add),
+        child:  Icon(Icons.add,color: AppColors.secondaryColor,),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -162,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           )));
                                 },
                                 child: Card(
-                                  color: getRandomColor(),
+                                  color: AppColors.primaryColor,
                                   child: ListTile(
                                       title: Column(
                                         mainAxisAlignment:

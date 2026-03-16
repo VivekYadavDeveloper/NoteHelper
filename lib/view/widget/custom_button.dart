@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:note_helper/core/utils/constant/app.color.dart';
 
 class CustomButton extends StatelessWidget {
-  CustomButton(
+  const CustomButton(
       {super.key,
       required this.title,
       required this.onTap,
+      required this.color,
       this.isLoading = false});
 
   final String title;
-  bool isLoading;
+  final bool isLoading;
   final VoidCallback onTap;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class CustomButton extends StatelessWidget {
       child: Container(
         height: 50,
         decoration: BoxDecoration(
-            color: AppColors.appBarColor,
+            color: color,
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.circular(12)),
         child: Center(
@@ -30,7 +32,8 @@ class CustomButton extends StatelessWidget {
                 )
               : Text(
                   title,
-                  style: const TextStyle(
+                  style:  TextStyle(
+                    color: AppColors.primaryColor,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),

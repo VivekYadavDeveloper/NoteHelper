@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:note_helper/core/utils/constant/app.color.dart';
 import 'package:note_helper/view/Auth/login.screen.dart';
 import 'package:note_helper/view/widget/custom_button.dart';
 import 'package:note_helper/view/widget/flutter.toast.dart';
@@ -198,6 +199,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     }
                   },
                   child: CustomButton(
+                    color: AppColors.secondaryColor,
                     isLoading: isLoading,
                     title: 'S I G N U P',
                     onTap: () {

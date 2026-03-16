@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:note_helper/core/utils/constant/app.color.dart';
 
-import '../../main.dart';
 
 class DetailScreen extends StatefulWidget {
   const DetailScreen({super.key, required this.title, required this.date, required this.subData});
@@ -24,7 +24,7 @@ class _DetailScreenState extends State<DetailScreen> {
       body: LayoutBuilder(
         builder: (context, BoxConstraints constraints) {
           return Card(
-              color: getRandomColor(),
+              color: AppColors.primaryColor,
               child: ListTile(
                 title: Text(
                   widget.subData,

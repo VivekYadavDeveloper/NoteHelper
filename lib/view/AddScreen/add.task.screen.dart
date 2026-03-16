@@ -1,8 +1,7 @@
-
-
-
+import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:note_helper/core/utils/constant/app.color.dart';
 
 import '../../Bloc/NoteBloc/create_note_bloc.dart';
 import '../widget/custom_button.dart';
@@ -16,104 +15,190 @@ class AddPTaskScreen extends StatefulWidget {
 }
 
 class _AddPTaskScreenState extends State<AddPTaskScreen> {
-  final TextEditingController taskController = TextEditingController();
-  final TextEditingController titleController = TextEditingController();
+  late EditorState titleEditorState;
+  late EditorState taskEditorState;
 
   bool loading = false;
-  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    titleEditorState = EditorState.blank(withInitialText: true);
+    taskEditorState = EditorState.blank(withInitialText: true);
+  }
 
   @override
   void dispose() {
-    taskController.dispose();
-    taskController.dispose();
+    titleEditorState.dispose();
+    taskEditorState.dispose();
     super.dispose();
   }
+
+  String _extractText(EditorState editorState) {
+    final document = editorState.document;
+    final buffer = StringBuffer();
+    for (final node in document.root.children) {
+      final delta = node.delta;
+      if (delta != null) {
+        buffer.writeln(delta.toPlainText());
+      }
+    }
+    return buffer.toString().trim();
+  }
+
+  bool _validate() {
+    final title = _extractText(titleEditorState);
+    final task = _extractText(taskEditorState);
+
+    if (title.isEmpty) {
+      FlutterToast().toastMessage('Enter the title');
+      return false;
+    }
+    if (task.isEmpty) {
+      FlutterToast().toastMessage('Add description for task');
+      return false;
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("C R E A T E  T A S K"),
-        ),
-        body: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child:
-                LayoutBuilder(builder: (context, BoxConstraints constraints) {
-              return Column(children: <Widget>[
-                const SizedBox(height: 50),
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      TextFormField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Enter the title';
-                          }
-                          return null;
-                        },
-                        maxLines: 1,
-                        keyboardType: TextInputType.emailAddress,
-                        controller: titleController,
-                        decoration: const InputDecoration(
-                          label: Text("Title"),
-                          hintText: "Title",
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Add description for task';
-                          }
-                          return null;
-                        },
-                        maxLines: 5,
-                        keyboardType: TextInputType.emailAddress,
-                        controller: taskController,
-                        decoration: const InputDecoration(
-                          label: Text("Your Task...."),
-                          hintText: "Your Task",
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ],
-                  ),
+      backgroundColor: AppColors.primaryColor,
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: const Text("C R E A T E  T A S K"),
+      ),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(height: 20),
+
+            // ── TITLE LABEL ──────────────────────────────────
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.0),
+              child: Text(
+                "Project Title",
+                style: TextStyle(
+                  fontSize: 35,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
                 ),
-                const SizedBox(height: 50),
-                BlocListener<CreateNoteBloc, CreateNoteState>(
-                    listener: (context, state) {
-                      if (state is CreateNoteLoading) {
-                        setState(() {
-                          loading = true;
-                        });
-                      } else if (state is CreateNoteFailure) {
-                        setState(() {
-                          loading = false;
-                        });
-                        FlutterToast().toastMessage(state.errorMessage);
-                      }
-                      else if (state is CreateNoteSuccess) {
-                        setState(() {
-                          loading = false;
-                          Navigator.pop(context);
-                        });
-                      } 
-                    },
-                    child: CustomButton(
-                        isLoading: loading,
-                        title: "A D D  T A S K",
-                        onTap: () {
-                          if (_formKey.currentState!.validate()) {
-                            context.read<CreateNoteBloc>().add(
-                                CreateNoteButtonEvent(
-                                    title: titleController.text.trim(),
-                                    description: taskController.text.trim()));
-                            
+              ),
+            ),
+            const SizedBox(height: 4),
+
+            // ── TITLE EDITOR (single line, no border) ────────
+            SizedBox(
+              height: 55,
+              child: AppFlowyEditor(
+                editorState: titleEditorState,
+                editorStyle: EditorStyle.mobile(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // ── TASK LABEL ───────────────────────────────────
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.0),
+              child: Text(
+                "Start Writing Your Project Details Here....",
+                style: TextStyle(
+                  fontSize: 26,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+
+            // ── TASK EDITOR (multi-line, no border) ──────────
+            Expanded(
+              child: AppFlowyEditor(
+                editable: true,
+                autoFocus: true,
+                showMagnifier: true,
+                shrinkWrap: true,
+                editorState: taskEditorState,
+                editorStyle: EditorStyle.mobile(),
+              ),
+            ),
+            // ── TASK TOOLBAR ─────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: MobileToolbar(
                   
-                          }
-                        }))
-              ]);
-            })));
+                  itemHighlightColor: AppColors.primaryColor,
+                  borderRadius: 10,
+                  toolbarHeight: 60,
+                  backgroundColor: AppColors.secondaryColor,
+                  tabbarSelectedBackgroundColor:
+                      AppColors.primaryGreenMintColor,
+                  itemOutlineColor: AppColors.primaryColor,
+                  editorState: taskEditorState,
+                  
+                  toolbarItems: [
+                    textDecorationMobileToolbarItem,
+                    buildTextAndBackgroundColorMobileToolbarItem(
+                        // textColorOptions: [
+                        //   ColorOption(colorHex: 0xFFC8F469.toString(), name: "Green Mint")
+                        // ],
+                        // backgroundColorOptions: [],
+                        ),
+                    headingMobileToolbarItem,
+                    listMobileToolbarItem,
+                    linkMobileToolbarItem,
+                    dividerMobileToolbarItem,
+                    quoteMobileToolbarItem,
+                    codeMobileToolbarItem,
+                  ],
+                ),
+              ),
+            ),
+            // ── SUBMIT BUTTON ────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: BlocListener<CreateNoteBloc, CreateNoteState>(
+                listener: (context, state) {
+                  if (state is CreateNoteLoading) {
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (state is CreateNoteFailure) {
+                    FlutterToast().toastMessage(state.errorMessage);
+                  } else if (state is CreateNoteSuccess) {
+                    FlutterToast().toastMessage("Project Created Successfully");
+                    Navigator.pop(context);
+                  }
+                },
+                child: CustomButton(
+                  color: AppColors.secondaryColor,
+                  isLoading: loading,
+                  title: "A D D  T A S K",
+                  onTap: () {
+                    if (_validate()) {
+                      final title = _extractText(titleEditorState);
+                      final description = _extractText(taskEditorState);
+                      context.read<CreateNoteBloc>().add(
+                            CreateNoteButtonEvent(
+                              title: title,
+                              description: description,
+                            ),
+                          );
+                    }
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

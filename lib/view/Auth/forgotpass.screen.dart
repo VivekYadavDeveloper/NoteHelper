@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:note_helper/core/utils/constant/app.color.dart';
 import 'package:note_helper/view/widget/custom_button.dart';
 
 import '../../Bloc/ForgotBloc/forgot_pass_bloc.dart';
@@ -93,6 +94,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       }
                     },
                     child: CustomButton(
+                      color: AppColors.secondaryColor,
                       isLoading: loading,
                       title: 'R E C O V E R ',
                       onTap: () {

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:note_helper/core/utils/constant/app.color.dart';
 import 'package:note_helper/view/verifiePhoneNum/verifie.phone.number.dart';
 import 'package:note_helper/view/widget/flutter.toast.dart';
 import '../widget/custom_button.dart';
@@ -57,6 +58,7 @@ class _LoginWithPhoneNumberState extends State<LoginWithPhoneNumber> {
               ),
               const SizedBox(height: 50),
               CustomButton(
+                color: AppColors.secondaryColor,
                 isLoading: loading,
                 title: 'L O G I N',
                 onTap: () {

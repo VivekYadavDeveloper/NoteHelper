@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
+import 'package:note_helper/core/utils/constant/app.color.dart';
 import 'package:note_helper/view/widget/custom_button.dart';
 import 'package:note_helper/view/widget/resuable.widget.dart';
 import '../../core/model/post.model.dart';
@@ -132,6 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 15),
                       CustomButton(
+                        color: AppColors.secondaryColor,
                           title: "Upload",
                           isLoading: isLoading,
                           onTap: () async {

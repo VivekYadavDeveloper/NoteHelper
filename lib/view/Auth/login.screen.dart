@@ -164,6 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         }
                       },
                       child: CustomButton(
+                        color: AppColors.secondaryColor,
                         isLoading: loading,
                         title: 'L O G I N',
                         onTap: () {
@@ -207,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 50,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
-                            border: Border.all(color: AppColors.appBarColor)),
+                            border: Border.all(color: AppColors.primaryColor)),
                         child: const Center(
                             child: Text("Login With Phone Number")),
                       ),

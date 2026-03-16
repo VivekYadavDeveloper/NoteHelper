@@ -9,7 +9,7 @@ class FlutterToast {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
-        backgroundColor: AppColors.appBarColor,
+        backgroundColor: AppColors.primaryColor,
         textColor: Colors.white,
         fontSize: 16.0);
   }
