@@ -1,6 +1,7 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:note_helper/core/model/post.model.dart';
 import 'package:note_helper/core/utils/constant/app.color.dart';
 
 import '../../Bloc/NoteBloc/create_note_bloc.dart';
@@ -8,7 +9,8 @@ import '../widget/custom_button.dart';
 import '../widget/flutter.toast.dart';
 
 class AddPTaskScreen extends StatefulWidget {
-  const AddPTaskScreen({super.key});
+  final PostModel? post;
+  const AddPTaskScreen({super.key, this.post});
 
   @override
   State<AddPTaskScreen> createState() => _AddPTaskScreenState();
@@ -20,11 +22,24 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
 
   bool loading = false;
 
+  bool get isEditMode => widget.post != null;
+
+  EditorState _buildEditor(String? text) {
+    if (text != null && text.isNotEmpty) {
+      return EditorState(
+        document: Document.blank()..insert([0], [paragraphNode(text: text)]),
+      );
+    } else {
+      return EditorState.blank(withInitialText: true);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    titleEditorState = EditorState.blank(withInitialText: true);
-    taskEditorState = EditorState.blank(withInitialText: true);
+
+    titleEditorState = _buildEditor(widget.post?.title);
+    taskEditorState = _buildEditor(widget.post?.taskName);
   }
 
   @override
@@ -67,7 +82,7 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
       backgroundColor: AppColors.primaryColor,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text("C R E A T E  T A S K"),
+        title: Text(isEditMode ? "EDIT TASK" : "C R E A T E  T A S K"),
       ),
       body: SafeArea(
         child: Column(
@@ -133,7 +148,6 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: MobileToolbar(
-                  
                   itemHighlightColor: AppColors.primaryColor,
                   borderRadius: 10,
                   toolbarHeight: 60,
@@ -142,7 +156,6 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
                       AppColors.primaryGreenMintColor,
                   itemOutlineColor: AppColors.primaryColor,
                   editorState: taskEditorState,
-                  
                   toolbarItems: [
                     textDecorationMobileToolbarItem,
                     buildTextAndBackgroundColorMobileToolbarItem(
@@ -173,24 +186,38 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
                   } else if (state is CreateNoteFailure) {
                     FlutterToast().toastMessage(state.errorMessage);
                   } else if (state is CreateNoteSuccess) {
-                    FlutterToast().toastMessage("Project Created Successfully");
+                    FlutterToast().toastMessage(
+                      isEditMode
+                          ? "Task Updated Successfully"
+                          : "Project Created Successfully",
+                    );
                     Navigator.pop(context);
+                    
                   }
                 },
                 child: CustomButton(
                   color: AppColors.secondaryColor,
                   isLoading: loading,
-                  title: "A D D  T A S K",
+                  title: isEditMode ? "U P D A T E  T A S K" : "A D D  T A S K",
                   onTap: () {
                     if (_validate()) {
                       final title = _extractText(titleEditorState);
                       final description = _extractText(taskEditorState);
-                      context.read<CreateNoteBloc>().add(
-                            CreateNoteButtonEvent(
-                              title: title,
-                              description: description,
-                            ),
-                          );
+
+                      if (isEditMode) {
+                        context.read<CreateNoteBloc>().add(
+                            UpdateNoteButtonEvent(
+                                taskId: widget.post!.taskID,
+                                title: title,
+                                description: description));
+                      } else {
+                        context.read<CreateNoteBloc>().add(
+                              CreateNoteButtonEvent(
+                                title: title,
+                                description: description,
+                              ),
+                            );
+                      }
                     }
                   },
                 ),
