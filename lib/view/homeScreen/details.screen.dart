@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:note_helper/core/model/post.model.dart';
-import 'package:note_helper/core/utils/constant/app.color.dart';
 import 'package:note_helper/view/AddScreen/add.task.screen.dart';
 
 class DetailScreen extends StatefulWidget {
