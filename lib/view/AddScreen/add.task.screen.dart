@@ -191,7 +191,8 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
                           ? "Task Updated Successfully"
                           : "Project Created Successfully",
                     );
-                    Navigator.pop(context);
+                    Navigator.popUntilWithResult(context, (route)=>route.isFirst,true);
+                    // Navigator.pop(context,true);                    
                     
                   }
                 },
