@@ -6,10 +6,11 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:note_helper/Bloc/HomeBloc/home_bloc.dart';
 import 'package:note_helper/Bloc/LoginBloc/login_bloc.dart';
-import 'package:note_helper/core/utils/constant/app.color.dart';
+
 import 'Bloc/ForgotBloc/forgot_pass_bloc.dart';
 import 'Bloc/NoteBloc/create_note_bloc.dart';
 import 'Bloc/SignupBloc/signup_bloc.dart';
+import 'Core/Utils/Constant/app_color.dart';
 import 'firebase_options.dart';
 import 'view/SplashScreen/splash_screen.dart';
 

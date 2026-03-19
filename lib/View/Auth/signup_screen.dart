@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:note_helper/core/utils/constant/app.color.dart';
-import 'package:note_helper/View/Auth/login.screen.dart';
+
 
 import '../../Bloc/SignupBloc/signup_bloc.dart';
+import '../../Core/Utils/Constant/app_color.dart';
 import '../../Utils/widget/custom_button.dart';
 import '../../Utils/widget/flutter_toast.dart';
+import 'login_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

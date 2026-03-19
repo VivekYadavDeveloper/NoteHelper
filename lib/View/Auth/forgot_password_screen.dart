@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:note_helper/core/utils/constant/app.color.dart';
+
 import '../../Bloc/ForgotBloc/forgot_pass_bloc.dart';
+import '../../Core/Utils/Constant/app_color.dart';
 import '../../Utils/widget/custom_button.dart';
 import '../../Utils/widget/flutter_toast.dart';
 

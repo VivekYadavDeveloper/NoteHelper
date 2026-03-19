@@ -1,7 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:note_helper/core/model/post.model.dart';
+
+import '../../Core/Model/post_model.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';

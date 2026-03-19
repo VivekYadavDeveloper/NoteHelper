@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:note_helper/core/utils/constant/app.color.dart';
+
 import 'package:note_helper/View/VerifiePhoneNum/verifie_phone_number.dart';
+import '../../Core/Utils/Constant/app_color.dart';
 import '../../Utils/widget/custom_button.dart';
 import '../../Utils/widget/flutter_toast.dart';
 
