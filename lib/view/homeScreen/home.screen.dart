@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:intl/intl.dart';
 import 'package:note_helper/Bloc/HomeBloc/home_bloc.dart';
 import 'package:note_helper/core/model/post.model.dart';
@@ -33,6 +35,17 @@ class _HomeScreenState extends State<HomeScreen> {
         .format(DateTime.fromMillisecondsSinceEpoch(dt));
   }
 
+  // ✅ Delta JSON se plain text extract karo
+  String _getPlainText(String taskName) {
+    try {
+      final json = jsonDecode(taskName);
+      final doc = Document.fromJson(json);
+      return doc.toPlainText().trim();
+    } catch (e) {
+      return taskName;
+    }
+  }
+
   Future<void> showMyDialog(String title, String id) async {
     editController.text = title;
     return showDialog(
@@ -57,7 +70,6 @@ class _HomeScreenState extends State<HomeScreen> {
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                // ✅ context.read use karo
                 context.read<HomeBloc>().add(HomeUpdateTaskEvent(
                       taskId: id,
                       newTitle: editController.text.trim(),
@@ -103,8 +115,8 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: const Icon(Icons.person),
             ),
             IconButton(
-              // ✅ context.read use karo
-              onPressed: () => context.read<HomeBloc>().add(HomeLogoutEvent()),
+              onPressed: () =>
+                  context.read<HomeBloc>().add(HomeLogoutEvent()),
               icon: const Icon(Icons.logout),
             ),
           ],
@@ -126,8 +138,9 @@ class _HomeScreenState extends State<HomeScreen> {
               // ── Search ─────────────────────────────────
               TextFormField(
                 controller: searchController,
-                onChanged: (value) =>
-                    context.read<HomeBloc>().add(HomeSearchEvent(query: value)),
+                onChanged: (value) => context
+                    .read<HomeBloc>()
+                    .add(HomeSearchEvent(query: value)),
                 decoration: const InputDecoration(
                   label: Text("Search"),
                   border: OutlineInputBorder(),
@@ -143,24 +156,23 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: BlocBuilder<HomeBloc, HomeState>(
                   builder: (context, state) {
-                    // Loading
                     if (state is HomeTasksLoading) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(
+                          child: CircularProgressIndicator());
                     }
-                    // Empty
                     if (state is HomeTasksEmpty) {
-                      return const Center(child: Text("No Task Available"));
+                      return const Center(
+                          child: Text("No Task Available"));
                     }
-                    // Error
                     if (state is HomeTasksError) {
                       return Center(child: Text(state.message));
                     }
-                    // Loaded
                     if (state is HomeTasksLoaded) {
                       final tasks = state.filteredTasks;
 
                       if (tasks.isEmpty) {
-                        return const Center(child: Text("No matching tasks"));
+                        return const Center(
+                            child: Text("No matching tasks"));
                       }
 
                       return ListView.builder(
@@ -171,20 +183,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           return GestureDetector(
                             onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (_) => DetailScreen(
-                                  title: post.title,
-                                  date: post.dt,
-                                  subData: post.taskName,
-                                  post: post,
-                                ),
+                                builder: (_) =>
+                                    DetailScreen(post: post),
                               ),
                             ),
                             child: Card(
                               color: AppColors.primaryColor,
                               child: ListTile(
                                 title: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.start,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       post.title,
@@ -195,18 +205,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
+                                    // ✅ JSON nahi — plain text dikhao
                                     Text(
-                                      post.taskName,
+                                      _getPlainText(post.taskName),
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
                                 ),
-                                subtitle: Text(getHumanReadableDate(post.dt)),
+                                subtitle: Text(
+                                    getHumanReadableDate(post.dt)),
                                 trailing: PopupMenuButton(
-                                  icon: const Icon(Icons.more_horiz_rounded),
+                                  icon: const Icon(
+                                      Icons.more_horiz_rounded),
                                   itemBuilder: (context) => [
-                                    // ── Edit ─────────────────────
+                                    // ── Edit ─────────────────
                                     PopupMenuItem(
                                       value: 1,
                                       child: ListTile(
@@ -215,29 +228,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              // ✅ post diya — edit mode
                                               builder: (_) =>
-                                                  AddPTaskScreen(post: post),
+                                                  AddPTaskScreen(
+                                                      post: post),
                                             ),
                                           );
                                         },
-                                        leading: const Icon(Icons.edit),
+                                        leading:
+                                            const Icon(Icons.edit),
                                         title: const Text("Edit"),
                                       ),
                                     ),
-                                    // ── Delete ───────────────────
+                                    // ── Delete ───────────────
                                     PopupMenuItem(
                                       value: 2,
                                       child: ListTile(
                                         onTap: () {
                                           Navigator.pop(context);
-                                          // ✅ context.read use karo
                                           context.read<HomeBloc>().add(
                                               HomeDeleteTaskEvent(
-                                                  taskId: post.taskID));
+                                                  taskId:
+                                                      post.taskID));
                                         },
-                                        leading: const Icon(
-                                            Icons.delete_forever_outlined),
+                                        leading: const Icon(Icons
+                                            .delete_forever_outlined),
                                         title: const Text("DELETE"),
                                       ),
                                     ),

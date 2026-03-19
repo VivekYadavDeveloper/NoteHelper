@@ -1,6 +1,8 @@
-import 'package:appflowy_editor/appflowy_editor.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:note_helper/core/model/post.model.dart';
 import 'package:note_helper/core/utils/constant/app.color.dart';
 
@@ -17,20 +19,35 @@ class AddPTaskScreen extends StatefulWidget {
 }
 
 class _AddPTaskScreenState extends State<AddPTaskScreen> {
-  late EditorState titleEditorState;
-  late EditorState taskEditorState;
+  late QuillController titleController;
+  late QuillController taskController;
 
   bool loading = false;
 
   bool get isEditMode => widget.post != null;
 
-  EditorState _buildEditor(String? text) {
-    if (text != null && text.isNotEmpty) {
-      return EditorState(
-        document: Document.blank()..insert([0], [paragraphNode(text: text)]),
+  QuillController _buildController(String? text) {
+    if (text == null || text.isEmpty) {
+      return QuillController.basic();
+    }
+    try {
+      final decoded = jsonDecode(text);
+      // ✅ List check — valid Delta JSON
+      if (decoded is List) {
+        final doc = Document.fromJson(decoded);
+        return QuillController(
+          document: doc,
+          selection: const TextSelection.collapsed(offset: 0),
+        );
+      }
+      throw Exception('Not a List');
+    } catch (e) {
+      // ✅ Plain text fallback
+      final doc = Document()..insert(0, text);
+      return QuillController(
+        document: doc,
+        selection: const TextSelection.collapsed(offset: 0),
       );
-    } else {
-      return EditorState.blank(withInitialText: true);
     }
   }
 
@@ -38,38 +55,34 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
   void initState() {
     super.initState();
 
-    titleEditorState = _buildEditor(widget.post?.title);
-    taskEditorState = _buildEditor(widget.post?.taskName);
+    titleController = _buildController(widget.post?.title);
+    taskController = _buildController(widget.post?.taskName);
   }
 
   @override
   void dispose() {
-    titleEditorState.dispose();
-    taskEditorState.dispose();
+    titleController.dispose();
+    taskController.dispose();
     super.dispose();
   }
 
-  String _extractText(EditorState editorState) {
-    final document = editorState.document;
-    final buffer = StringBuffer();
-    for (final node in document.root.children) {
-      final delta = node.delta;
-      if (delta != null) {
-        buffer.writeln(delta.toPlainText());
-      }
-    }
-    return buffer.toString().trim();
+  String _extractText(QuillController controller) {
+    return controller.document.toPlainText().trim();
+  }
+
+  String _extractJson(QuillController controller) {
+    final delta = controller.document.toDelta().toJson();
+    final json = jsonEncode(delta);
+    debugPrint('Saving JSON: $json');
+    return json;
   }
 
   bool _validate() {
-    final title = _extractText(titleEditorState);
-    final task = _extractText(taskEditorState);
-
-    if (title.isEmpty) {
+    if (_extractText(titleController).isEmpty) {
       FlutterToast().toastMessage('Enter the title');
       return false;
     }
-    if (task.isEmpty) {
+    if (_extractText(taskController).isEmpty) {
       FlutterToast().toastMessage('Add description for task');
       return false;
     }
@@ -90,7 +103,7 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
           children: <Widget>[
             const SizedBox(height: 20),
 
-            // ── TITLE LABEL ──────────────────────────────────
+            /*──--------------- TITLE LABEL ──────────────────────────────────*/
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Text(
@@ -104,20 +117,25 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
             ),
             const SizedBox(height: 4),
 
-            // ── TITLE EDITOR (single line, no border) ────────
+            /*──---------- TITLE EDITOR ────────*/
             SizedBox(
               height: 55,
-              child: AppFlowyEditor(
-                editorState: titleEditorState,
-                editorStyle: EditorStyle.mobile(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: QuillEditor(
+                controller: titleController,
+                scrollController: ScrollController(),
+                config: const QuillEditorConfig(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  maxHeight: 55,
+                  minHeight: 55,
+                  // ✅ Toolbar nahi chahiye title ke liye
+                  placeholder: '',
                 ),
+                focusNode: FocusNode(),
               ),
             ),
-
             const SizedBox(height: 16),
 
-            // ── TASK LABEL ───────────────────────────────────
+            /*──----------- TASK LABEL ───────────────────────────────────*/
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Text(
@@ -131,50 +149,71 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
             ),
             const SizedBox(height: 4),
 
-            // ── TASK EDITOR (multi-line, no border) ──────────
+            /*──---------- TASK EDITOR (multi-line, no border) ──────────*/
             Expanded(
-              child: AppFlowyEditor(
-                editable: true,
-                autoFocus: true,
-                showMagnifier: true,
-                shrinkWrap: true,
-                editorState: taskEditorState,
-                editorStyle: EditorStyle.mobile(),
+              child: QuillEditor(
+                controller: taskController,
+                scrollController: ScrollController(),
+                config: const QuillEditorConfig(
+                  padding: EdgeInsets.all(12),
+                  placeholder: '',
+                  autoFocus: true,
+                ),
+                focusNode: FocusNode(),
               ),
             ),
-            // ── TASK TOOLBAR ─────────────────────────────────
+
+            /*──------------------ TASK TOOLBAR ─────────────────────────────────*/
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: MobileToolbar(
-                  itemHighlightColor: AppColors.primaryColor,
-                  borderRadius: 10,
-                  toolbarHeight: 60,
-                  backgroundColor: AppColors.secondaryColor,
-                  tabbarSelectedBackgroundColor:
-                      AppColors.primaryGreenMintColor,
-                  itemOutlineColor: AppColors.primaryColor,
-                  editorState: taskEditorState,
-                  toolbarItems: [
-                    textDecorationMobileToolbarItem,
-                    buildTextAndBackgroundColorMobileToolbarItem(
-                        // textColorOptions: [
-                        //   ColorOption(colorHex: 0xFFC8F469.toString(), name: "Green Mint")
-                        // ],
-                        // backgroundColorOptions: [],
+                child: QuillSimpleToolbar(
+                  controller: taskController,
+                  config: QuillSimpleToolbarConfig(
+                    color: AppColors.secondaryColor,
+                    showBoldButton: true,
+                    showItalicButton: true,
+                    showUnderLineButton: true,
+                    showStrikeThrough: true,
+                    showColorButton: true,
+                    showBackgroundColorButton: true,
+                    showHeaderStyle: true,
+                    showListNumbers: true,
+                    showListBullets: true,
+                    showLink: true,
+                    showCodeBlock: true,
+                    showQuote: true,
+                    showDividers: true,
+                    showAlignmentButtons: false,
+                    showDirection: false,
+                    showSearchButton: false,
+                    showSubscript: false,
+                    showSuperscript: false,
+                    showSmallButton: false,
+                    showInlineCode: false,
+                    showIndent: false,
+                    showClearFormat: false,
+                    showFontFamily: false,
+                    showFontSize: false,
+                    iconTheme: QuillIconTheme(
+                      iconButtonSelectedData: IconButtonData(
+                        color: AppColors.primaryColor,
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStatePropertyAll(
+                              AppColors.primaryGreenMintColor),
                         ),
-                    headingMobileToolbarItem,
-                    listMobileToolbarItem,
-                    linkMobileToolbarItem,
-                    dividerMobileToolbarItem,
-                    quoteMobileToolbarItem,
-                    codeMobileToolbarItem,
-                  ],
+                      ),
+                      iconButtonUnselectedData: IconButtonData(
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
-            // ── SUBMIT BUTTON ────────────────────────────────
+
+            /* ──-------------- SUBMIT BUTTON ────────────────────────────────*/
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: BlocListener<CreateNoteBloc, CreateNoteState>(
@@ -191,9 +230,8 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
                           ? "Task Updated Successfully"
                           : "Project Created Successfully",
                     );
-                    Navigator.popUntilWithResult(context, (route)=>route.isFirst,true);
-                    // Navigator.pop(context,true);                    
-                    
+                    Navigator.popUntilWithResult(
+                        context, (route) => route.isFirst, true);
                   }
                 },
                 child: CustomButton(
@@ -202,8 +240,8 @@ class _AddPTaskScreenState extends State<AddPTaskScreen> {
                   title: isEditMode ? "U P D A T E  T A S K" : "A D D  T A S K",
                   onTap: () {
                     if (_validate()) {
-                      final title = _extractText(titleEditorState);
-                      final description = _extractText(taskEditorState);
+                      final title = _extractText(titleController);
+                      final description = _extractJson(taskController);
 
                       if (isEditMode) {
                         context.read<CreateNoteBloc>().add(

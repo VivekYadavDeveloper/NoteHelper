@@ -1,7 +1,8 @@
-import 'package:appflowy_editor/appflowy_editor.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:note_helper/Bloc/HomeBloc/home_bloc.dart';
 import 'package:note_helper/Bloc/LoginBloc/login_bloc.dart';
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
       title: 'N O T E  H E L P E R',
       debugShowCheckedModeBanner: false,
       localizationsDelegates: [
-        AppFlowyEditorLocalizations.delegate,
+        FlutterQuillLocalizations.delegate,
       ],
       theme: ThemeData(
         scaffoldBackgroundColor: AppColors.primaryColor,
