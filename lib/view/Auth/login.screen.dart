@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:note_helper/core/utils/constant/app.color.dart';
-import 'package:note_helper/view/Auth/forgotpass.screen.dart';
-import 'package:note_helper/view/Auth/login.with.phone.dart';
-import 'package:note_helper/view/widget/custom_button.dart';
-import 'package:note_helper/view/widget/flutter.toast.dart';
+import 'package:note_helper/View/Auth/forgotpass.screen.dart';
+import 'package:note_helper/View/Auth/login.with.phone.dart';
+
 
 import '../../Bloc/LoginBloc/login_bloc.dart';
-import '../homeScreen/home.screen.dart';
+import '../../Utils/widget/custom_button.dart';
+import '../../Utils/widget/flutter_toast.dart';
+import '../HomeScreen/home_screen.dart';
 import 'signup.screen.dart';
 
 class LoginScreen extends StatefulWidget {

@@ -3,8 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
+import '../../Utils/widget/flutter_toast.dart';
 
-import '../../view/widget/flutter.toast.dart';
+
 
 part 'signup_event.dart';
 

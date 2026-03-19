@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 
-import '../../view/widget/flutter.toast.dart';
+import '../../Utils/widget/flutter_toast.dart';
+
 
 part 'forgot_pass_event.dart';
 

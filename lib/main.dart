@@ -11,7 +11,7 @@ import 'Bloc/ForgotBloc/forgot_pass_bloc.dart';
 import 'Bloc/NoteBloc/create_note_bloc.dart';
 import 'Bloc/SignupBloc/signup_bloc.dart';
 import 'firebase_options.dart';
-import 'view/splashScreen/splash.screen.dart';
+import 'view/SplashScreen/splash_screen.dart';
 
 void main() async {
   DefaultFirebaseOptions.currentPlatform;

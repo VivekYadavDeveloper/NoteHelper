@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:note_helper/core/utils/constant/app.color.dart';
-import 'package:note_helper/view/widget/custom_button.dart';
-
 import '../../Bloc/ForgotBloc/forgot_pass_bloc.dart';
-import '../widget/flutter.toast.dart';
+import '../../Utils/widget/custom_button.dart';
+import '../../Utils/widget/flutter_toast.dart';
+
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});

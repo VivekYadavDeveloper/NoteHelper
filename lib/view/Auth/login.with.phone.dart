@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:note_helper/core/utils/constant/app.color.dart';
-import 'package:note_helper/view/verifiePhoneNum/verifie.phone.number.dart';
-import 'package:note_helper/view/widget/flutter.toast.dart';
-import '../widget/custom_button.dart';
+import 'package:note_helper/View/VerifiePhoneNum/verifie_phone_number.dart';
+import '../../Utils/widget/custom_button.dart';
+import '../../Utils/widget/flutter_toast.dart';
+
 
 class LoginWithPhoneNumber extends StatefulWidget {
   const LoginWithPhoneNumber({super.key});
