@@ -4,13 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 
-
 import '../../Bloc/NoteBloc/create_note_bloc.dart';
 import '../../Core/Model/post_model.dart';
 import '../../Core/Utils/Constant/app_color.dart';
 import '../../Utils/widget/custom_button.dart';
 import '../../Utils/widget/flutter_toast.dart';
-
 
 class CreateDocScreen extends StatefulWidget {
   final PostModel? post;
@@ -158,7 +156,7 @@ class _CreateDocScreenState extends State<CreateDocScreen> {
                 scrollController: ScrollController(),
                 config: const QuillEditorConfig(
                   padding: EdgeInsets.all(12),
-                  placeholder: '',
+                  placeholder: 'Here',
                   autoFocus: true,
                 ),
                 focusNode: FocusNode(),
@@ -168,49 +166,68 @@ class _CreateDocScreenState extends State<CreateDocScreen> {
             /*──------------------ TASK TOOLBAR ─────────────────────────────────*/
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: AppColors.primaryGreenMintColor,
+                    borderRadius: BorderRadius.circular(20)),
                 child: QuillSimpleToolbar(
                   controller: taskController,
                   config: QuillSimpleToolbarConfig(
-                    color: AppColors.secondaryColor,
-                    showBoldButton: true,
-                    showItalicButton: true,
-                    showUnderLineButton: true,
-                    showStrikeThrough: true,
-                    showColorButton: true,
-                    showBackgroundColorButton: true,
-                    showHeaderStyle: true,
-                    showListNumbers: true,
-                    showListBullets: true,
-                    showLink: true,
-                    showCodeBlock: true,
-                    showQuote: true,
-                    showDividers: true,
-                    showAlignmentButtons: false,
-                    showDirection: false,
-                    showSearchButton: false,
-                    showSubscript: false,
-                    showSuperscript: false,
-                    showSmallButton: false,
-                    showInlineCode: false,
-                    showIndent: false,
-                    showClearFormat: false,
-                    showFontFamily: false,
-                    showFontSize: false,
-                    iconTheme: QuillIconTheme(
-                      iconButtonSelectedData: IconButtonData(
-                        color: AppColors.primaryColor,
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(
-                              AppColors.primaryGreenMintColor),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: AppColors.secondaryColor,
+                          border: Border.all(color: AppColors.secondaryColor)),
+                      multiRowsDisplay: true,
+                      toolbarSize: 48,
+                      toolbarSectionSpacing: 2,
+                      // color: AppColors.primaryGreenMintColor,
+                      showBoldButton: true,
+                      showItalicButton: true,
+                      showUnderLineButton: true,
+                      showStrikeThrough: true,
+                      showColorButton: true,
+                      showBackgroundColorButton: true,
+                      showHeaderStyle: true,
+                      showListNumbers: true,
+                      showListBullets: true,
+                      showLink: true,
+                      showCodeBlock: true,
+                      showQuote: true,
+                      showDividers: true,
+                      showAlignmentButtons: false,
+                      showDirection: false,
+                      showSearchButton: false,
+                      showSubscript: false,
+                      showSuperscript: false,
+                      showSmallButton: false,
+                      showInlineCode: false,
+                      showIndent: true,
+                      showClearFormat: false,
+                      showFontFamily: true,
+                      iconTheme: QuillIconTheme(
+                        iconButtonSelectedData: IconButtonData(
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStatePropertyAll(
+                                AppColors.primaryGreenMintColor),
+                            foregroundColor: WidgetStatePropertyAll(
+                                AppColors.primaryGreenMintColor),
+                            iconColor:
+                                WidgetStatePropertyAll(AppColors.primaryColor),
+                            shape: WidgetStatePropertyAll(
+                              RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                            ),
+                            minimumSize: WidgetStatePropertyAll(Size(38, 38)),
+                            padding: WidgetStatePropertyAll(EdgeInsets.all(7)),
+                          ),
                         ),
-                      ),
-                      iconButtonUnselectedData: IconButtonData(
-                        color: AppColors.primaryColor,
-                      ),
-                    ),
-                  ),
+                        iconButtonUnselectedData: IconButtonData(
+                          style: ButtonStyle(
+                            foregroundColor:
+                                WidgetStatePropertyAll(AppColors.primaryColor),
+                          ),
+                        ),
+                      )),
                 ),
               ),
             ),

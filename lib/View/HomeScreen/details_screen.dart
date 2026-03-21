@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:intl/intl.dart';
+import 'package:note_helper/Utils/widget/custom_button.dart';
 
 import 'package:note_helper/view/CreateDocScreen/create_doc_screen.dart';
 
@@ -31,8 +32,8 @@ class _DetailScreenState extends State<DetailScreen> {
           document: doc,
           selection: const TextSelection.collapsed(offset: 0),
           config: const QuillControllerConfig(
-          requireScriptFontFeatures: false,
-        ),
+            requireScriptFontFeatures: false,
+          ),
         );
       } else {
         throw Exception('Not a Delta JSON');
@@ -63,57 +64,50 @@ class _DetailScreenState extends State<DetailScreen> {
     return Scaffold(
       backgroundColor: AppColors.primaryColor,
       appBar: AppBar(
-        backgroundColor: AppColors.primaryColor,
-        title: Text(widget.post.title),
-        actions: [
-          IconButton(
-            onPressed: () => _goToEditScreen(context),
-            icon: const Icon(Icons.edit),
-          ),
-        ],
+        // backgroundColor: AppColors.primaryColor,
+        title: Text(widget.post.title,style: TextStyle(fontSize: 35,fontWeight: FontWeight.bold),),
+       
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Date ─────────────────────────────────────
-            Text(
-              getHumanReadableDate(widget.post.dt),
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 13,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // ── Rich Text — Read Only ─────────────────────
-            Expanded(
-              child: QuillEditor(
-                controller: _controller,
-                scrollController: ScrollController(),
-                focusNode: FocusNode(),
-                config: const QuillEditorConfig(
-                  padding: EdgeInsets.all(8),
-            
-                  showCursor: false,
-                  enableInteractiveSelection: false,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── Date ─────────────────────────────────────
+              Text(
+                getHumanReadableDate(widget.post.dt),
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 13,
                 ),
               ),
-            ),
+              const SizedBox(height: 16),
 
-            // ── Edit Button ───────────────────────────────
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.secondaryColor,
+              // ── Rich Text — Read Only ─────────────────────
+              Expanded(
+                child: QuillEditor(
+                  controller: _controller,
+                  scrollController: ScrollController(),
+                  focusNode: FocusNode(),
+                  config: const QuillEditorConfig(
+                    padding: EdgeInsets.all(8),
+                    showCursor: false,
+                    enableInteractiveSelection: false,
+                  ),
                 ),
-                onPressed: () => _goToEditScreen(context),
-                child: const Text("E D I T  T A S K"),
               ),
-            ),
-          ],
+
+              // ── Edit Button ───────────────────────────────
+              CustomButton(
+                onTap: () {
+                  _goToEditScreen(context);
+                },
+                title: "EDIT",
+                color: AppColors.secondaryColor,
+              ),
+            ],
+          ),
         ),
       ),
     );
