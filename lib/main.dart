@@ -5,7 +5,7 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:note_helper/Bloc/HomeBloc/home_bloc.dart';
 import 'package:note_helper/Bloc/LoginBloc/login_bloc.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'Bloc/ForgotBloc/forgot_pass_bloc.dart';
 import 'Bloc/NoteBloc/create_note_bloc.dart';
 import 'Bloc/SignupBloc/signup_bloc.dart';
@@ -37,6 +37,9 @@ class MyApp extends StatelessWidget {
       title: 'N O T E  H E L P E R',
       debugShowCheckedModeBanner: false,
       localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
         FlutterQuillLocalizations.delegate,
       ],
       theme: ThemeData(

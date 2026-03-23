@@ -52,6 +52,8 @@ dependencies:
   rename: ^3.1.0
   bloc: ^9.2.0
   flutter_quill: ^11.5.0
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

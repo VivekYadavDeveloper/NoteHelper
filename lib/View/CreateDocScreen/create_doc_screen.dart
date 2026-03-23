@@ -21,6 +21,8 @@ class CreateDocScreen extends StatefulWidget {
 class _CreateDocScreenState extends State<CreateDocScreen> {
   late QuillController titleController;
   late QuillController taskController;
+  late FocusNode titleFocusNode;
+  late FocusNode taskFocusNode;
 
   bool loading = false;
 
@@ -57,12 +59,16 @@ class _CreateDocScreenState extends State<CreateDocScreen> {
 
     titleController = _buildController(widget.post?.title);
     taskController = _buildController(widget.post?.taskName);
+    titleFocusNode = FocusNode();
+    taskFocusNode = FocusNode();
   }
 
   @override
   void dispose() {
     titleController.dispose();
     taskController.dispose();
+    titleFocusNode.dispose();
+    taskFocusNode.dispose();
     super.dispose();
   }
 
@@ -127,13 +133,12 @@ class _CreateDocScreenState extends State<CreateDocScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   maxHeight: 55,
                   minHeight: 55,
-                  // ✅ Toolbar nahi chahiye title ke liye
                   placeholder: '',
                 ),
-                focusNode: FocusNode(),
+                focusNode: titleFocusNode,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
 
             /*──----------- TASK LABEL ───────────────────────────────────*/
             const Padding(
@@ -148,7 +153,46 @@ class _CreateDocScreenState extends State<CreateDocScreen> {
               ),
             ),
             const SizedBox(height: 4),
-
+            /*──------------------ TASK TOOLBAR ─────────────────────────────────*/
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: QuillSimpleToolbar(
+                  controller: taskController,
+                  config: QuillSimpleToolbarConfig(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: AppColors.primaryColor,
+                        border: Border.all(color: AppColors.secondaryColor)),
+                    multiRowsDisplay: false,
+                    toolbarSize: 45,
+                    toolbarSectionSpacing: 1.0,
+                    showBoldButton: true,
+                    showItalicButton: true,
+                    showUnderLineButton: true,
+                    showStrikeThrough: true,
+                    showColorButton: true,
+                    showBackgroundColorButton: true,
+                    showHeaderStyle: true,
+                    showListNumbers: true,
+                    showListBullets: true,
+                    showLink: true,
+                    showCodeBlock: true,
+                    showQuote: true,
+                    showDividers: true,
+                    showAlignmentButtons: false,
+                    showDirection: false,
+                    showSearchButton: false,
+                    showFontSize: true,
+                    showSubscript: false,
+                    showSuperscript: false,
+                    showSmallButton: false,
+                    showInlineCode: false,
+                    showIndent: true,
+                    showClearFormat: true,
+                    showFontFamily: true,
+                  )),
+            ),
+            const SizedBox(height: 4),
             /*──---------- TASK EDITOR (multi-line, no border) ──────────*/
             Expanded(
               child: QuillEditor(
@@ -156,79 +200,10 @@ class _CreateDocScreenState extends State<CreateDocScreen> {
                 scrollController: ScrollController(),
                 config: const QuillEditorConfig(
                   padding: EdgeInsets.all(12),
-                  placeholder: 'Here',
+                  placeholder: 'Here...',
                   autoFocus: true,
                 ),
-                focusNode: FocusNode(),
-              ),
-            ),
-
-            /*──------------------ TASK TOOLBAR ─────────────────────────────────*/
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                    color: AppColors.primaryGreenMintColor,
-                    borderRadius: BorderRadius.circular(20)),
-                child: QuillSimpleToolbar(
-                  controller: taskController,
-                  config: QuillSimpleToolbarConfig(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: AppColors.secondaryColor,
-                          border: Border.all(color: AppColors.secondaryColor)),
-                      multiRowsDisplay: true,
-                      toolbarSize: 48,
-                      toolbarSectionSpacing: 2,
-                      // color: AppColors.primaryGreenMintColor,
-                      showBoldButton: true,
-                      showItalicButton: true,
-                      showUnderLineButton: true,
-                      showStrikeThrough: true,
-                      showColorButton: true,
-                      showBackgroundColorButton: true,
-                      showHeaderStyle: true,
-                      showListNumbers: true,
-                      showListBullets: true,
-                      showLink: true,
-                      showCodeBlock: true,
-                      showQuote: true,
-                      showDividers: true,
-                      showAlignmentButtons: false,
-                      showDirection: false,
-                      showSearchButton: false,
-                      showSubscript: false,
-                      showSuperscript: false,
-                      showSmallButton: false,
-                      showInlineCode: false,
-                      showIndent: true,
-                      showClearFormat: false,
-                      showFontFamily: true,
-                      iconTheme: QuillIconTheme(
-                        iconButtonSelectedData: IconButtonData(
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStatePropertyAll(
-                                AppColors.primaryGreenMintColor),
-                            foregroundColor: WidgetStatePropertyAll(
-                                AppColors.primaryGreenMintColor),
-                            iconColor:
-                                WidgetStatePropertyAll(AppColors.primaryColor),
-                            shape: WidgetStatePropertyAll(
-                              RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                            ),
-                            minimumSize: WidgetStatePropertyAll(Size(38, 38)),
-                            padding: WidgetStatePropertyAll(EdgeInsets.all(7)),
-                          ),
-                        ),
-                        iconButtonUnselectedData: IconButtonData(
-                          style: ButtonStyle(
-                            foregroundColor:
-                                WidgetStatePropertyAll(AppColors.primaryColor),
-                          ),
-                        ),
-                      )),
-                ),
+                focusNode: taskFocusNode,
               ),
             ),
 
