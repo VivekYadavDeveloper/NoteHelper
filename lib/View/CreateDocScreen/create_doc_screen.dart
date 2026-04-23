@@ -101,27 +101,13 @@ class _CreateDocScreenState extends State<CreateDocScreen> {
       backgroundColor: AppColors.primaryColor,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text(isEditMode ? "EDIT TASK" : "C R E A T E  T A S K"),
+        title: Text(isEditMode ? "Edit Doc" : "New Doc"),
       ),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             const SizedBox(height: 20),
-
-            /*──--------------- TITLE LABEL ──────────────────────────────────*/
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.0),
-              child: Text(
-                "Project Title",
-                style: TextStyle(
-                  fontSize: 35,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            const SizedBox(height: 4),
 
             /*──---------- TITLE EDITOR ────────*/
             SizedBox(
@@ -133,26 +119,12 @@ class _CreateDocScreenState extends State<CreateDocScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   maxHeight: 55,
                   minHeight: 55,
-                  placeholder: '',
+                  placeholder: 'Project Name Here',
                 ),
                 focusNode: titleFocusNode,
               ),
             ),
             const SizedBox(height: 8),
-
-            /*──----------- TASK LABEL ───────────────────────────────────*/
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.0),
-              child: Text(
-                "Start Writing Your Project Details Here....",
-                style: TextStyle(
-                  fontSize: 26,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            const SizedBox(height: 4),
             /*──------------------ TASK TOOLBAR ─────────────────────────────────*/
             Padding(
               padding: const EdgeInsets.all(8.0),

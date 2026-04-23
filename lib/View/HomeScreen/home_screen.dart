@@ -8,7 +8,6 @@ import 'package:note_helper/Bloc/HomeBloc/home_bloc.dart';
 import 'package:note_helper/View/HomeScreen/details_screen.dart';
 import 'package:note_helper/View/ProfileScreen/profile_screen.dart';
 
-
 import '../../Core/Model/post_model.dart';
 import '../../Core/Utils/Constant/app_color.dart';
 import '../../Utils/widget/flutter_toast.dart';
@@ -50,44 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> showMyDialog(String title, String id) async {
-    editController.text = title;
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("UPDATE"),
-          content: TextField(
-            autofocus: true,
-            controller: editController,
-            decoration: const InputDecoration(
-              label: Text("Edit"),
-              hintText: "Edit",
-              border: OutlineInputBorder(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("CANCEL"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                context.read<HomeBloc>().add(HomeUpdateTaskEvent(
-                      taskId: id,
-                      newTitle: editController.text.trim(),
-                    ));
-                FlutterToast().toastMessage("UPDATE CHANGED");
-              },
-              child: const Text("UPDATE"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocListener<HomeBloc, HomeState>(
@@ -106,10 +67,13 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         backgroundColor: AppColors.primaryColor,
         appBar: AppBar(
-          centerTitle: true,
+          centerTitle: false,
           automaticallyImplyLeading: false,
           backgroundColor: AppColors.primaryColor,
-          title: const Text("T A S K  S C R E E N"),
+          title: const Text(
+            "Docly",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           actions: [
             IconButton(
               onPressed: () => Navigator.push(
@@ -180,6 +144,46 @@ class _HomeScreenState extends State<HomeScreen> {
                           PostModel post = tasks[index];
 
                           return GestureDetector(
+                            onLongPress: () {
+                              editController.text = post.title;
+                              showDialog(
+                                barrierDismissible: false,
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  content:
+                                      Text("Are you sure you want to delete"),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text(
+                                        "Cancel",
+                                        style: TextStyle(
+                                            color: AppColors.secondaryColor,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      style: ButtonStyle(
+                                          backgroundColor:
+                                              WidgetStatePropertyAll(
+                                                  Colors.redAccent.shade700)),
+                                      onPressed: () {
+                                        context.read<HomeBloc>().add(
+                                            HomeDeleteTaskEvent(
+                                                taskId: post.taskID));
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text(
+                                        "Delete",
+                                        style: TextStyle(
+                                            color: AppColors.primaryColor,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                             onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (_) => DetailScreen(post: post),
@@ -210,44 +214,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ],
                                 ),
                                 subtitle: Text(getHumanReadableDate(post.dt)),
-                                trailing: PopupMenuButton(
-                                  icon: const Icon(Icons.more_horiz_rounded),
-                                  itemBuilder: (context) => [
-                                    // ── Edit ─────────────────
-                                    PopupMenuItem(
-                                      value: 1,
-                                      child: ListTile(
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) =>
-                                                  CreateDocScreen(post: post),
-                                            ),
-                                          );
-                                        },
-                                        leading: const Icon(Icons.edit),
-                                        title: const Text("Edit"),
-                                      ),
-                                    ),
-                                    // ── Delete ───────────────
-                                    PopupMenuItem(
-                                      value: 2,
-                                      child: ListTile(
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          context.read<HomeBloc>().add(
-                                              HomeDeleteTaskEvent(
-                                                  taskId: post.taskID));
-                                        },
-                                        leading: const Icon(
-                                            Icons.delete_forever_outlined),
-                                        title: const Text("DELETE"),
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               ),
                             ),
                           );
