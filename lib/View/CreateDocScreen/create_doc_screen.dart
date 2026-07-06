@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:note_helper/Utils/Helper/document_export_helper.dart';
 
 import '../../Bloc/NoteBloc/create_note_bloc.dart';
 import '../../Core/Model/post_model.dart';
@@ -102,6 +103,29 @@ class _CreateDocScreenState extends State<CreateDocScreen> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(isEditMode ? "Edit Doc" : "New Doc"),
+        actions: [
+          PopupMenuButton<ExportFormat>(
+              icon: Icon(Icons.download),
+              onSelected: (formate) {
+                /*    pehle validate karo ki title/body khali na ho*/
+                if (!_validate()) return;
+
+                final title = _extractText(titleController);
+                final body = _extractText(taskController);
+                DocumentExportHelper.exportAndShare(
+                    title: title, bodyPlainText: body, format: formate);
+              },
+              itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: ExportFormat.docx,
+                      child: Text('Export as DOCX'),
+                    ),
+                    PopupMenuItem(
+                      value: ExportFormat.pdf,
+                      child: Text('Export as PDF'),
+                    ),
+                  ])
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -119,7 +143,7 @@ class _CreateDocScreenState extends State<CreateDocScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   maxHeight: 55,
                   minHeight: 55,
-                  placeholder: 'Project Name Here',
+                  placeholder: 'Doc title here',
                 ),
                 focusNode: titleFocusNode,
               ),

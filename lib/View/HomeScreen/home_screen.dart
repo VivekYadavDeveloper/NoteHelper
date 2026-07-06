@@ -10,6 +10,7 @@ import 'package:note_helper/View/ProfileScreen/profile_screen.dart';
 
 import '../../Core/Model/post_model.dart';
 import '../../Core/Utils/Constant/app_color.dart';
+import '../../Utils/Helper/document_export_helper.dart';
 import '../../Utils/widget/flutter_toast.dart';
 
 import '../Auth/login_screen.dart';
@@ -214,6 +215,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ],
                                 ),
                                 subtitle: Text(getHumanReadableDate(post.dt)),
+                                trailing: PopupMenuButton<ExportFormat>(
+                                  icon: const Icon(Icons.more_vert),
+                                  onSelected: (format) {
+                                    DocumentExportHelper.exportAndShare(
+                                      title: post.title,
+                                      bodyPlainText:
+                                          _getPlainText(post.taskName),
+                                      format: format,
+                                    );
+                                  },
+                                  itemBuilder: (context) => const [
+                                    PopupMenuItem(
+                                        value: ExportFormat.docx,
+                                        child: Text('Export as DOCX')),
+                                    PopupMenuItem(
+                                        value: ExportFormat.pdf,
+                                        child: Text('Export as PDF')),
+                                  ],
+                                ),
                               ),
                             ),
                           );
