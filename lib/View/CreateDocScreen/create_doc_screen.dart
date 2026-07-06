@@ -8,6 +8,7 @@ import 'package:note_helper/Utils/Helper/document_export_helper.dart';
 import '../../Bloc/NoteBloc/create_note_bloc.dart';
 import '../../Core/Model/post_model.dart';
 import '../../Core/Utils/Constant/app_color.dart';
+import '../../Utils/Widget/save_as_bottom_sheet.dart';
 import '../../Utils/widget/custom_button.dart';
 import '../../Utils/widget/flutter_toast.dart';
 
@@ -112,8 +113,12 @@ class _CreateDocScreenState extends State<CreateDocScreen> {
 
                 final title = _extractText(titleController);
                 final body = _extractText(taskController);
-                DocumentExportHelper.exportAndShare(
-                    title: title, bodyPlainText: body, format: formate);
+                showSaveAsSheet(
+                  context: context,
+                  title: title,
+                  bodyPlainText: body,
+                  format: formate,
+                );
               },
               itemBuilder: (context) => [
                     PopupMenuItem(

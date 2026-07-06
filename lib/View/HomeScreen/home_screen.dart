@@ -11,6 +11,7 @@ import 'package:note_helper/View/ProfileScreen/profile_screen.dart';
 import '../../Core/Model/post_model.dart';
 import '../../Core/Utils/Constant/app_color.dart';
 import '../../Utils/Helper/document_export_helper.dart';
+import '../../Utils/Widget/save_as_bottom_sheet.dart';
 import '../../Utils/widget/flutter_toast.dart';
 
 import '../Auth/login_screen.dart';
@@ -218,7 +219,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 trailing: PopupMenuButton<ExportFormat>(
                                   icon: const Icon(Icons.more_vert),
                                   onSelected: (format) {
-                                    DocumentExportHelper.exportAndShare(
+                                    showSaveAsSheet(
+                                      // ✅ direct call — DocumentExportHelper. hatao
+                                      context: context,
                                       title: post.title,
                                       bodyPlainText:
                                           _getPlainText(post.taskName),

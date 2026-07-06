@@ -1,48 +1,75 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:docs_gee/docs_gee.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 enum ExportFormat { docx, pdf }
 
 class DocumentExportHelper {
-  /*title = note ka title (plain text)*/
-  /* bodyPlainText = Quill se extract kiya hua plain text (naya line = \n)*/
-  static Future<void> exportAndShare({
+  /// Common logic — bytes + filename banata hai, dono save methods reuse karte hain
+  static ({Uint8List bytes, String fileName}) _generate({
+    required String title,
+    required String bodyPlainText,
+    required ExportFormat format,
+  }) {
+    final doc = Document(title: title, author: 'Docly');
+    doc.addParagraph(Paragraph.heading(title, level: 1));
+
+    final lines = bodyPlainText.split('\n');
+    for (final line in lines) {
+      if (line.trim().isEmpty) continue;
+      doc.addParagraph(Paragraph.text(line));
+    }
+
+    final bytes = format == ExportFormat.docx
+        ? DocxGenerator().generate(doc)
+        : PdfGenerator().generate(doc);
+
+    final extension = format == ExportFormat.docx ? 'docx' : 'pdf';
+    final safeTitle = title.trim().isEmpty ? 'Untitled' : title.trim();
+
+    return (bytes: bytes, fileName: '$safeTitle.$extension');
+  }
+
+  /// OPTION 1 — "This Device": native Save-As dialog, user apni location choose karta hai
+  static Future<bool> saveToDevice({
     required String title,
     required String bodyPlainText,
     required ExportFormat format,
   }) async {
-    // 1. docs_gee ka Document object banao
-    final doc = Document(title: title, author: 'Docly');
+    final result = _generate(
+      title: title,
+      bodyPlainText: bodyPlainText,
+      format: format,
+    );
 
-    // 2. Title ko heading ki tarah add karo
-    doc.addParagraph(Paragraph.heading(title, level: 1));
+    // v11 mein API static hai: FilePicker.saveFile (FilePicker.platform.saveFile NAHI)
+    final outputFile = await FilePicker.platform.saveFile(
+      dialogTitle: 'Save document',
+      fileName: result.fileName,
+      bytes: result.bytes,
+    );
 
-    // 3. Body ko line-by-line normal paragraph ki tarah add karo
-    final lines = bodyPlainText.split('\n');
-    for (final line in lines) {
-      if (line.trim().isEmpty) continue; // khali lines skip
-      doc.addParagraph(Paragraph.text(line));
-    }
+    return outputFile != null; // null matlab user ne cancel kiya
+  }
 
-    // 4. Format ke hisaab se bytes generate karo
-    late Uint8List bytes;
-    late String extension;
-    if (format == ExportFormat.docx) {
-      bytes = DocxGenerator().generate(doc);
-      extension = 'docx';
-    } else {
-      bytes = PdfGenerator().generate(doc);
-      extension = 'pdf';
-    }
+  /// OPTION 2 — "Share / Google Drive": native share sheet
+  static Future<void> shareViaSheet({
+    required String title,
+    required String bodyPlainText,
+    required ExportFormat format,
+  }) async {
+    final result = _generate(
+      title: title,
+      bodyPlainText: bodyPlainText,
+      format: format,
+    );
 
-    // 5. Temp file mein save karo aur share karo (mobile ke liye)
     final dir = await getTemporaryDirectory();
-    final safeTitle = title.trim().isEmpty ? 'Untitled' : title.trim();
-    final file = File('${dir.path}/$safeTitle.$extension');
-    await file.writeAsBytes(bytes);
+    final file = File('${dir.path}/${result.fileName}');
+    await file.writeAsBytes(result.bytes);
 
     await Share.shareXFiles([XFile(file.path)]);
   }
